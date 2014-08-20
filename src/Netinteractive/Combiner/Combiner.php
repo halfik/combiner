@@ -63,7 +63,7 @@ class Combiner {
 			file_put_contents($toPath,$text);
 		}
 
-		return asset($toPath);
+		return asset(str_replace(public_path(),'',$toPath));
 
 		/*$resFileName=$mode.'.'.\App::getLocale().'.'.$type;
 		$path=public_path($resFileName);
