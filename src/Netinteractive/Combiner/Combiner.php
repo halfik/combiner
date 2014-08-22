@@ -34,7 +34,7 @@ class Combiner {
 				$path=public_path($path);
 
 				if(is_dir($path)){
-					$paths=$paths+\Netinteractive\Utils\Utils::scanDir($path,'.'.$extension,true);
+					$paths=array_merge($paths,\Netinteractive\Utils\Utils::scanDir($path,'.'.$extension,true));
 				}
 				else{
 					$paths[]=$path;
