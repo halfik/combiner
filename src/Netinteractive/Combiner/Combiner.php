@@ -63,7 +63,16 @@ class Combiner {
 			file_put_contents($toPath,$text);
 		}
 
-		return asset(str_replace(public_path(),'',$toPath));
+		$publicPath = public_path();
+
+		if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'){
+			if ( $publicPath[count($publicPath)-1] != '\\' ){
+				$publicPath .= '\\';
+			}
+		}
+
+
+		return asset(str_replace($publicPath,'',$toPath));
 
 		/*$resFileName=$mode.'.'.\App::getLocale().'.'.$type;
 		$path=public_path($resFileName);
