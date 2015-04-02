@@ -19,6 +19,12 @@ class CombinerServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		$this->package('netinteractive/combiner');
+
+        $this->app['combiner:clean'] = $this->app->share(function($app)
+        {
+            return new Commands\Clean;
+        });
+        $this->commands('combiner:clean');
 	}
 
 	/**
