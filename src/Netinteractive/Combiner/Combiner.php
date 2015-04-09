@@ -21,7 +21,7 @@ class Combiner {
 			array_pop($fName);
 		}
 
-		$fName=implode('.',$fName).'.'.\App::getLocale().'.'.$extension;
+		$fName=implode('.',$fName).'.'.\Gettext::getLocale().'.'.$extension;
 		$toPath=$pathInfo['dirname'].DIRECTORY_SEPARATOR.$fName;
 
 

@@ -34,6 +34,9 @@ istnieje
 
 ## Changelog
 
-#### Version 1.0.1
+#### 1.0.3
+* zmiana sposobu pobierania pliku jezykowego na: \Gettext::getLocale()
+
+#### 1.0.1
 * dodana komenda combiner:clear
 * dodana dokumentacjia
