@@ -11,8 +11,8 @@
     "require": {
         "php": ">=5.4.0",
         "illuminate/support": "5.0.*",
-	    "netinteractive/utils": ">=2.0.*",
-        "netinteractive/gettext": ">=2.0.*"
+	    "netinteractive/utils": "2.0.*",
+        "netinteractive/gettext": "2.0.*"
     },
     "autoload": {
         "psr-0": {

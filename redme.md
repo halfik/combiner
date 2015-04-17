@@ -34,6 +34,7 @@ istnieje
 
 ## Changelog
 
+
 #### 2.0.0
 * wersja dla Lararavel 5
 
