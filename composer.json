@@ -1,7 +1,7 @@
 {
     "name": "netinteractive/combiner",
-    "version": "1.0.3",
-    "description": "",
+    "version": "2.0.0",
+    "description": "Combine js and css",
     "authors": [
         {
             "name": "Michal Shapowalow",
@@ -10,13 +10,10 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "illuminate/support": "4.2.*",
-	    "netinteractive/utils": "@dev"
+        "illuminate/support": "5.0.*",
+	    "netinteractive/utils": ">=2.0.*"
     },
     "autoload": {
-        "classmap": [
-            "src/migrations"
-        ],
         "psr-0": {
             "Netinteractive\\Combiner\\": "src/"
         }

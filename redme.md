@@ -34,6 +34,9 @@ istnieje
 
 ## Changelog
 
+#### 2.0.0
+* wersja dla Lararavel 5
+
 #### 1.0.3
 * zmiana sposobu pobierania pliku jezykowego na: \Gettext::getLocale()
 
