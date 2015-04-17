@@ -1,7 +1,7 @@
 <?php namespace Netinteractive\Combiner;
 
 use Netinteractive\Utils\Utils;
-use \Gettext;
+use Netinteractive\Gettext\Facades\Gettext;
 
 class Combiner {
 	static function incFile($fromPaths, $toPath, $extension=null){
