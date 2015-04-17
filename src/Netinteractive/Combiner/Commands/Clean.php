@@ -4,7 +4,6 @@ namespace Netinteractive\Combiner\Commands;
 use \Illuminate\Console\Command;
 use \Symfony\Component\Console\Input\InputOption;
 use \Symfony\Component\Console\Input\InputArgument;
-use \Netinteractive\Forms\Generator;
 
 class Clean extends Command {
 
@@ -13,7 +12,7 @@ class Clean extends Command {
      *
      * @var string
      */
-    protected $name = 'combiner:clean';
+    protected $name = 'ni-combiner:clean';
 
     /**
      * The console command description.

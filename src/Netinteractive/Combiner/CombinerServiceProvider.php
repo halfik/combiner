@@ -11,6 +11,10 @@ class CombinerServiceProvider extends ServiceProvider {
 	 */
 	protected $defer = false;
 
+    protected $commands = [
+        'Netinteractive\Combiner\Commands\Clean',
+    ];
+
 	/**
 	 * Bootstrap the application events.
 	 *
@@ -18,13 +22,7 @@ class CombinerServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('netinteractive/combiner');
 
-        $this->app['combiner:clean'] = $this->app->share(function($app)
-        {
-            return new Commands\Clean;
-        });
-        $this->commands('combiner:clean');
 	}
 
 	/**
@@ -34,7 +32,7 @@ class CombinerServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		//
+        $this->commands($this->commands);
 	}
 
 	/**
