@@ -33,6 +33,7 @@ class CombinerServiceProvider extends ServiceProvider {
 	public function register()
 	{
         $this->commands($this->commands);
+        $this->app->bind('Combiner','Netinteractive\Combiner\Combiner');
 	}
 
 	/**
