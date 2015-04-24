@@ -1,9 +1,10 @@
 <?php namespace Netinteractive\Combiner;
 
 use Netinteractive\Utils\Utils;
-use Netinteractive\Gettext\Facades\Gettext;
 
-class Combiner {
+
+class Combiner implements  \Netinteractive\Combiner\Interfaces\Combiner{
+
 	static function incFile($fromPaths, $toPath, $extension=null){
 
 		if(!is_array($fromPaths)){
@@ -20,9 +21,8 @@ class Combiner {
 			array_pop($fName);
 		}
 
-		$fName=implode('.',$fName).'.'.Gettext::getLocale().'.'.$extension;
+		$fName=implode('.',$fName).'.'.\Gettext::getLocale().'.'.$extension;
 		$toPath=$pathInfo['dirname'].DIRECTORY_SEPARATOR.$fName;
-
 
 
 		$paths=array();
@@ -64,12 +64,5 @@ class Combiner {
 
 
 		return asset(str_replace($publicPath,'',$toPath));
-	}
-
-	static function phpEval($t){
-		$t=preg_replace_callback("/php\(\/\*(.*)\*\/\)/",function($matches){
-			return eval("return json_encode(".$matches[1].');');
-		},$t);
-		return $t;
 	}
 }

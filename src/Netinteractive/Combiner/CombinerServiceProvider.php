@@ -16,16 +16,6 @@ class CombinerServiceProvider extends ServiceProvider {
     ];
 
 	/**
-	 * Bootstrap the application events.
-	 *
-	 * @return void
-	 */
-	public function boot()
-	{
-
-	}
-
-	/**
 	 * Register the service provider.
 	 *
 	 * @return void
@@ -33,7 +23,11 @@ class CombinerServiceProvider extends ServiceProvider {
 	public function register()
 	{
         $this->commands($this->commands);
-        $this->app->bind('Combiner','Netinteractive\Combiner\Combiner');
+        $this->app->bind('combiner', function () {
+            return new Combiner();
+        });
+
+        $this->app->alias('Combiner','\Netinteractive\Combiner\Facades\CombinerFacade');
 	}
 
 	/**
