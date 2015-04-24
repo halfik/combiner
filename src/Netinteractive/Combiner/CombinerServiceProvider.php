@@ -28,7 +28,6 @@ class CombinerServiceProvider extends ServiceProvider {
             return new Combiner();
         });
 
-        // Shortcut so developers don't need to add an Alias in app/config/app.php
         $this->app->booting(function()
         {
             AliasLoader::getInstance()->alias('Combiner','Netinteractive\Combiner\Facades\CombinerFacade');

@@ -63,7 +63,6 @@ class Combiner implements  CombinerInterface{
 			}
 		}
 
-
 		return asset(str_replace($publicPath,'',$toPath));
 	}
 }
