@@ -1,6 +1,7 @@
 <?php namespace Netinteractive\Combiner;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Foundation\AliasLoader;
 
 class CombinerServiceProvider extends ServiceProvider {
 
@@ -27,7 +28,11 @@ class CombinerServiceProvider extends ServiceProvider {
             return new Combiner();
         });
 
-        $this->app->alias('Combiner','\Netinteractive\Combiner\Facades\CombinerFacade');
+        // Shortcut so developers don't need to add an Alias in app/config/app.php
+        $this->app->booting(function()
+        {
+            AliasLoader::getInstance()->alias('Combiner','Netinteractive\Combiner\Facades\CombinerFacade');
+        });
 	}
 
 	/**

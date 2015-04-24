@@ -1,9 +1,10 @@
 <?php namespace Netinteractive\Combiner;
 
 use Netinteractive\Utils\Utils;
+use Netinteractive\Combiner\Interfaces\CombinerInterface;
 
 
-class Combiner implements  \Netinteractive\Combiner\Interfaces\Combiner{
+class Combiner implements  CombinerInterface{
 
 	static function incFile($fromPaths, $toPath, $extension=null){
 
