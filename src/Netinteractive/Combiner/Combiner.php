@@ -6,27 +6,97 @@ use Netinteractive\Combiner\Interfaces\CombinerInterface;
 
 class Combiner implements  CombinerInterface{
 
+    //Sciezka do skinów
+    protected $skinsPaths;
+
+    //Skiny z ktorych theba skombinowac pkik
+    protected $skins=array();
+
+    //Prefix do sceizki z wygenerowanym plikiem
+    protected $prefix;
+
+    //Handler do wygenerownego pliku (minify albo obfuscate)
+    protected $handler;
+
+    //pliki do zalodownia
+    protected $paths=array();
+
+    //typ plikow do ladowanie
+    protected $type;
+
+    public static function includeFiles($config){
+        $combiner = new self($config);
+        return $combiner->combine();
+    }
+
+    public function __construct($config=null)
+    {
+        if($config){
+            $this->skinsPaths=$config['skinsPaths'];
+            $this->paths=$config['paths'];
+            $this->prefix=$config['prefix']();
+            $this->handler=$config['handler'];
+            $this->type=$config['type'];
+            $this->skins=$config['skins'];
+        }
+    }
+
+    public function setSkins(array $skins){
+        $this->skins=$skins;
+        return $this;
+    }
+
+    public function addSkin($skin){
+        $this->skins[]=$skin;
+        return $this;
+    }
+
+    public function setSkinPath($skinsPath){
+        $this->skinsPath=$skinsPath;
+        return $this;
+    }
+
     /**
-     * Skleja i zapisjue pliki do jedengo plika i zwraca url do tego pliku
-     * @param array $fromPaths - lista plikow lub folderow
-     * @param string $toPath - plik do ktorego trzeba zapisac
-     * @param null $extension - rozrzezenie pliku
-     * @return string - url zapisanego pliku
+     * @param $prefix
+     * @return $this
      */
-	static function includeFile($fromPaths, $toPath, $extension=null){
+    public function setPrefix($prefix)
+    {
+        $this->prefix=$prefix;
+        return $this;
+    }
 
-		static::glueFiles($fromPaths, $toPath, $extension);
+    /**
+     * @param callable $handler
+     * @return $this
+     */
+    public function setHandler(\Closure $handler){
+        $this->handler=$handler;
+        return $this;
+    }
 
-		$publicPath = public_path();
+    /**
+     * @param $type
+     * @return $this
+     */
+    public function setType($type)
+    {
+        $this->type=$type;
+        return $this;
+    }
 
-		if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'){
-			if ( $publicPath[count($publicPath)-1] != '\\' ){
-				$publicPath .= '\\';
-			}
-		}
 
-		return asset(str_replace($publicPath,'',$toPath));
-	}
+    /**
+     * Dodaje lkik do plików ktore trzeba zaladowac
+     * @param string $path - sciezka do pliku wedlug foldery ze skinami
+     * @return $this
+     */
+    public function addPath($path)
+    {
+        $this->paths[]=$path;
+        return $this;
+    }
+
 
     /**
      * Lączy pliki w jeden
@@ -67,35 +137,34 @@ class Combiner implements  CombinerInterface{
                 $text.=file_get_contents($path)."\n";
             }
 
-            $text=preg_replace_callback("/php\(\/\*(.*)\*\/\)/",function($matches){
-                return eval("return json_encode(".$matches[1].');');
-            },$text);
-
-
             file_put_contents($toPath,$text);
         }
     }
 
-    /**
-     * Laczy pliki ze skina
-     * @param string|array $skins - skiny z krotuch trzeba polaczyc pkiki ('default','red') (napierw szuka w red, jak nie ma w red to w default)
-     * @param string $type - typ pliky
-     * @param array $paths - pliki i foldery ktore treba podlaczyc najpierw (zeby mozna bylo zdefinijowac kolejnosc podlaczenia plikow)
-     * @param string $mode - tryb frontend czy backend
-     */
-    static function includeSkin($skins, $type='js', $paths=array(), $mode='frontend'){
-        if(!is_array($skins)){
-            $skins=array();
-        }
-        foreach($skins as $skin){
-            $skinPath=public_path('app/'.$mode.'/'.$skin);
-            $skinFiles=Utils::scanDir($skinPath,'.'.$type,true);
+    public function combine(){
+        foreach($this->skins as $skin){
+            $skinPath=$this->skinsPaths.$skin;
+            $skinFiles=Utils::scanDir($skinPath,'.'.$this->type,true);
             foreach($skinFiles as $skinFile){
-                $skinFile=str_replace($skinPath,'',$skinFile);
-                if(!in_array($skinFile,$paths)){
-                    $paths[]=$skinFile;
+                $skinFile=str_replace($skinPath.DIRECTORY_SEPARATOR,'',$skinFile);
+                if(!in_array($skinFile,$this->paths)){
+                    $this->paths[]=$skinFile;
                 }
             }
         }
+        $realPaths=array();
+        foreach($this->paths as $path){
+            foreach($this->skins as $skin){
+
+                $realPath=public_path($this->skinsPaths.'/'.$skin.'/'.$path);
+                if(is_file($realPath)){
+                    $realPaths[$path]=$realPath;
+                }
+            }
+        }
+
+        debug($realPaths);
+
     }
+
 }

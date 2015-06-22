@@ -2,5 +2,5 @@
 namespace Netinteractive\Combiner\Interfaces;
 
 interface CombinerInterface{
-    public static function incFile($fromPaths, $toPath, $extension=null);
+    public static function glueFiles($fromPaths, $toPath, $extension=null);
 }
