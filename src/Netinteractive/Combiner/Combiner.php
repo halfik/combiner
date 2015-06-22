@@ -13,7 +13,7 @@ class Combiner implements  CombinerInterface{
      * @param null $extension - rozrzezenie pliku
      * @return string - url zapisanego pliku
      */
-	static function incFile($fromPaths, $toPath, $extension=null){
+	static function includeFile($fromPaths, $toPath, $extension=null){
 
 		static::glueFiles($fromPaths, $toPath, $extension);
 
@@ -76,7 +76,26 @@ class Combiner implements  CombinerInterface{
         }
     }
 
-    static function includeSkin($paths){
-
+    /**
+     * Laczy pliki ze skina
+     * @param string|array $skins - skiny z krotuch trzeba polaczyc pkiki ('default','red') (napierw szuka w red, jak nie ma w red to w default)
+     * @param string $type - typ pliky
+     * @param array $paths - pliki i foldery ktore treba podlaczyc najpierw (zeby mozna bylo zdefinijowac kolejnosc podlaczenia plikow)
+     * @param string $mode - tryb frontend czy backend
+     */
+    static function includeSkin($skins, $type='js', $paths=array(), $mode='frontend'){
+        if(!is_array($skins)){
+            $skins=array();
+        }
+        foreach($skins as $skin){
+            $skinPath=public_path('app/'.$mode.'/'.$skin);
+            $skinFiles=Utils::scanDir($skinPath,'.'.$type,true);
+            foreach($skinFiles as $skinFile){
+                $skinFile=str_replace($skinPath,'',$skinFile);
+                if(!in_array($skinFile,$paths)){
+                    $paths[]=$skinFile;
+                }
+            }
+        }
     }
 }
