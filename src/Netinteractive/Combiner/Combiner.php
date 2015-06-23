@@ -6,10 +6,7 @@ use Netinteractive\Combiner\Interfaces\CombinerInterface;
 
 class Combiner implements  CombinerInterface{
 
-    //Sciezka do skinów
-    protected $skinsPath;
-
-    //Skiny z ktorych theba skombinowac pkik
+    //Scezki do skinow z ktorych ma byc wygenerowany plik
     protected $skins=array();
 
     //Handler do wygenerownego pliku (minify albo obfuscate)
@@ -24,22 +21,30 @@ class Combiner implements  CombinerInterface{
     //typ plikow do ladowanie
     protected $type;
 
+
     /**
      * Tworzy objekt na podstawie konfigu, laczy pliki i zwraca url do polącanego pliku
-     * @param $config
+     * @param array $config
+     * @return string
      */
     public static function includeFiles($config){
         $combiner = new self($config);
-        if(\Config::get('app.debug')){
+        if(\Config::get('app.debug') || !is_file($combiner->getSavePath())){
             $combiner->combine();
         }
         return $combiner->makeUrl();
     }
 
+    /**
+     * @return array
+     */
     public function getSkins(){
         return $this->skins;
     }
 
+    /**
+     * @return mixed
+     */
     public function getSavePath(){
         return $this->savePath;
     }
@@ -85,8 +90,6 @@ class Combiner implements  CombinerInterface{
      */
     public function loadConfig(array $config)
     {
-        $this->setSkinsPath($config['skinsPath']);
-
         $this->setPaths($config['paths']);
         $this->setHandler($config['handler']);
         $this->setType($config['type']);
@@ -124,16 +127,6 @@ class Combiner implements  CombinerInterface{
      */
     public function addSkin($skin){
         $this->skins[]=$skin;
-        return $this;
-    }
-
-    /**
-     * Ustawic sciezki do skinow
-     * @param $skinsPath
-     * @return $this
-     */
-    public function setSkinsPath($skinsPath){
-        $this->skinsPath=$skinsPath;
         return $this;
     }
 
@@ -176,11 +169,10 @@ class Combiner implements  CombinerInterface{
      */
     public function combine(){
         //Prygotwac liste plikow ze wszykich skinow ktore treba podloaczyc
-        foreach($this->skins as $skin){
-            $skinPath=$this->skinsPath.$skin;
-            $skinFiles=Utils::scanDir($skinPath,'.'.$this->type,true);
+        foreach($this->skins as $skinPath){
+            $skinFiles=Utils::scanDir(realpath($skinPath),'.'.$this->type,true);
             foreach($skinFiles as $skinFile){
-                $skinFile=str_replace($skinPath.DIRECTORY_SEPARATOR,'',$skinFile);
+                $skinFile=str_replace(realpath($skinPath).DIRECTORY_SEPARATOR,'',$skinFile);
                 if(!in_array($skinFile,$this->paths)){
                     $this->paths[]=$skinFile;
                 }
@@ -192,21 +184,35 @@ class Combiner implements  CombinerInterface{
         foreach($this->paths as $path){
             //Jezeli plik jest zewnentzny (nie ze skina a na pryzklad z paczki)
             if(strpos($path, public_path())===0){
-                $realPaths[]=$path;
+                if(is_dir($path)){
+                    $realPaths=array_merge($realPaths, Utils::scanDir(realpath($path),'.'.$this->type,true));
+                }
+                else{
+                    $realPaths[]=$path;
+                }
             }
             else{
                 //Dodac plik z potrebnego skina
-                foreach($this->skins as $skin){
-                    $realPath=$this->skinsPath.$skin.'/'.$path;
-                    if(is_file($realPath)){
+                foreach($this->skins as $skinPath){
+                    $realPath=$skinPath.$path;
+                    if(is_dir($realPath)){
+                        $dirPaths=Utils::scanDir(realpath($realPath),'.'.$this->type,true);
+                        foreach($dirPaths as $dirPath){
+                            $pathKey=str_replace($skinPath,'',$dirPath);
+                            $realPaths[$pathKey]=$dirPath;
+                        }
+                    }
+                    elseif(is_file($realPath)){
                         $realPaths[$path]=$realPath;
                     }
+
                 }
             }
 
         }
 
         //Poloczyc zawartosc plikow
+        $realPaths=array_unique($realPaths);
         $text='';
         foreach($realPaths as $path){
             $text.=file_get_contents($path);
