@@ -16,6 +16,19 @@ class CombinerServiceProvider extends ServiceProvider {
         'Netinteractive\Combiner\Commands\Clean',
     ];
 
+    /**
+     * Bootstrap the application events.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $this->publishes([
+            __DIR__.'/../../config.php' => config_path('/packages/netinteractive/combiner.php'),
+        ], 'config');
+
+    }
+
 	/**
 	 * Register the service provider.
 	 *
