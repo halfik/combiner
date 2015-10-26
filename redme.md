@@ -1,2 +1,6 @@
+
+#### 2.0.2
+    Dodalem super closury, aby opakowac funkcje anonimowe konfiga.
+
 #### 2.0.1
-* wersja dla Laravel 5
+    Wersja dla Laravel 5.

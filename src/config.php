@@ -1,5 +1,7 @@
 <?php
 
+$serializer = new SuperClosure\Serializer(null, '123Core2Combiner');
+
 $makeSavePath=function($combiner, $mode){
     $skins=$combiner->getSkins();
     $skin=array_pop($skins);
@@ -25,14 +27,14 @@ return array(
             'type'=>'js',
 
             //Funkcja do generownia sciezki dla zapisywania wygenerowanego pliku
-            'savePath'=>function(\Netinteractive\combiner\Combiner $combiner) use ($makeSavePath){
+            'savePath'=>  $serializer->serialize(function(\Netinteractive\combiner\Combiner $combiner) use ($makeSavePath){
                 return $makeSavePath($combiner, 'backend');
-            },
+            }),
 
             //Handler dla modyfikownia sklejonego pliku (minify, obfuscat, etc)
-            'handler'=>function($text) use ($handleJs){
+            'handler'=> $serializer->serialize(function($text) use ($handleJs){
                 return $handleJs($text);
-            },
+            }),
 
             //pliki ktore theba zaladowac w pierwszej kolejnosci
             'paths'=>array(
@@ -44,16 +46,16 @@ return array(
 
         'frontend'=>array(
             'skins'=>public_path('app/frontend/default/'),
-            'savePath'=>function(\Netinteractive\combiner\Combiner $combiner) use ($makeSavePath){
+            'savePath' => $serializer->serialize(function(\Netinteractive\combiner\Combiner $combiner) use ($makeSavePath){
                 return $makeSavePath($combiner, 'frontend');
-            },
-            'handler'=>function($text) use($handleJs){
+            }),
+            'handler' => $serializer->serialize(function($text) use($handleJs){
                 return $handleJs($text);
-            },
+            }),
             'type'=>'js',
             'paths'=>array(
                 public_path('packages/netinteractive/jQuery/jquery.min.js'),
-                'test.js'
+
             )
         )
     ),
