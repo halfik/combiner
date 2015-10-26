@@ -135,7 +135,7 @@ class Combiner implements  CombinerInterface{
      * @param callable $handler
      * @return $this
      */
-    public function setHandler(\Closure $handler){
+    public function setHandler($handler){
         $this->handler=$handler;
         return $this;
     }
