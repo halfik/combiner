@@ -1,6 +1,6 @@
 {
     "name": "netinteractive/combiner",
-    "version": "2.0.3",
+    "version": "2.0.4",
     "description": "Combine js and css",
     "authors": [
         {
@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "illuminate/support": "5.1.*",
+        "illuminate/support": "5.2.*",
 	    "netinteractive/utils": "2.0.*",
         "jeremeamia/superclosure": "~2.0"
     },
