@@ -27,7 +27,7 @@
         ],
         "psr-0": {
             "Netinteractive\\Combiner\\": "src/"
-        }`
+        }
     },
     "minimum-stability": "stable"
 }
