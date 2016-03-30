@@ -35,8 +35,8 @@ class Combiner
      * @param $type
      * @param $mode
      */
-   public function make($skin, $mode, $type)
-   {
+    public function make($skin, $mode, $type)
+    {
         $this->setSkin($skin);
         $this->setMode($mode);
         $this->setType($type);
@@ -49,7 +49,7 @@ class Combiner
        }
 
        return $this->makeUrl();
-   }
+    }
 
     /**
      * Laczy pliki w jeden
@@ -60,15 +60,14 @@ class Combiner
         $filesList = array();
         foreach($this->getPaths() AS $path){
             $currentPath = null;
-            /**
-             * Sprawdzamy czy path mamy jako bezposrednia sciezke, czy tez tablice konfiguracyjna
-             */
+
+            # sprawdzamy czy path mamy jako bezposrednia sciezke, czy tez tablice konfiguracyjna
             if (is_array($path)){
                 #pliki dla wersji mobile
                 if (array_key_exists('mobile', $path) && $path['mobile'] == true){
-                    /*if (!isMobile()){
+                    if (!isMobile()){
                         break;
-                    }*/
+                    }
                 }
 
                 #jesli mamy podane jezyki, dla ktorych plik ma byc mergowany
@@ -85,7 +84,8 @@ class Combiner
                         }
                     }
                 }
-            }else{
+            }
+            else{
                 $currentPath = $path;
             }
 
@@ -113,8 +113,10 @@ class Combiner
         #unique
         $filesList = array_unique($filesList);
 
-
+        #budowanie tresci
         $content = $this->buildOutputContent($filesList);
+
+        #zapis
         $this->saveOutputFile($content);
     }
 

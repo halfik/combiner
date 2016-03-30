@@ -3,7 +3,14 @@
 $serializer = new SuperClosure\Serializer(null, '123Core2Combiner');
 
 $makeSavePath = function(\Netinteractive\Combiner\Combiner $combiner){
-    return public_path('combiner/'.$combiner->getSkin().'/'.$combiner->getType().'/'.\App::getLocale().'/'.$combiner->getMode().'.'.$combiner->getType());
+    $mobilePrefix = '';
+    if (isMobile()){
+        $mobilePrefix = 'mobile_';
+    }
+
+    $path = 'combiner/'.$combiner->getSkin().'/'.$combiner->getType().'/'.\App::getLocale().'/'.$mobilePrefix.''.$combiner->getMode().'.'.$combiner->getType();
+
+    return public_path($path);
 };
 
 $handleJs = function($js){
@@ -32,9 +39,6 @@ return array(
                 //pliki ktore theba zaladowac w pierwszej kolejnosci
                 'paths'=>array(
                     public_path('packages/netinteractive/jQuery/jquery.min.js'),
-                    public_path('packages/netinteractive/easyUi/jquery.easyui.min.js'),
-                    'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js',
-                    public_path('packages/netinteractive/plugins')
                 ),
             ),
 

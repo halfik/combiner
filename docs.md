@@ -66,7 +66,6 @@ Ponizszy przyklad zawartosc katalogu "packages/netinteractive/plugins" laduje ty
         );
         
 
-
 ##Kolejność ładowania plików
 Pliki ladowane sa w kolejnosci podanej w pliku konfiguracyjnym.
 Jesli ladujemy pliki z calego katalogu, a checmy aby jeden z nich zaladowal sie przed innymi, to dodajemy go
