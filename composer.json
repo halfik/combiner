@@ -15,6 +15,9 @@
         "jeremeamia/superclosure": "~2.0"
     },
     "autoload": {
+        "classmap": [
+          "src/Netinteractive/Combiner/Exceptions.php"
+        ],
         "psr-0": {
             "Netinteractive\\Combiner\\": "src/"
         }

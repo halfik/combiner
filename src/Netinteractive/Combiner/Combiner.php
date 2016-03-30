@@ -27,7 +27,8 @@ class Combiner implements  CombinerInterface{
      * @param array $config
      * @return string
      */
-    public static function includeFiles($config){
+    public static function includeFiles($config)
+    {   var_dump($config); exit;
         $combiner = new self($config);
         if(\Config::get('app.debug') || !is_file($combiner->getSavePath())){
             $combiner->combine();
@@ -162,15 +163,43 @@ class Combiner implements  CombinerInterface{
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return \Closure
+     */
+    public function getHandler()
+    {
+        return $this->handler;
+    }
+
+
+    /**
+     * @return boolean
+     */
+    public function hasHandler()
+    {
+        return !empty($this->handler);
+    }
 
     /**
      * Laczy pliki w jeden
      * @return $this
      */
-    public function combine(){
+    public function combine()
+    {
+        #Sprawdzamy, czy mamy niezbedne dane konfiguracyjne, aby wygnerowac plik wyjsciowy
+        $this->checkConfiguration();
+
         //Prygotwac liste plikow ze wszykich skinow ktore treba podloaczyc
         foreach($this->skins as $skinPath){
-            $skinFiles=Utils::scanDir(realpath($skinPath),'.'.$this->type,true);
+            $skinFiles=Utils::scanDir(realpath($skinPath),'.'.$this->getType(),true);
             foreach($skinFiles as $skinFile){
                 $skinFile=str_replace(realpath($skinPath).DIRECTORY_SEPARATOR,'',$skinFile);
                 if(!in_array($skinFile,$this->paths)){
@@ -185,7 +214,7 @@ class Combiner implements  CombinerInterface{
             //Jezeli plik jest zewnentzny (nie ze skina a na pryzklad z paczki)
             if(strpos($path, public_path())===0){
                 if(is_dir($path)){
-                    $realPaths=array_merge($realPaths, Utils::scanDir(realpath($path),'.'.$this->type,true));
+                    $realPaths=array_merge($realPaths, Utils::scanDir(realpath($path),'.'.$this->getType(),true));
                 }
                 else{
                     $realPaths[]=$path;
@@ -196,7 +225,7 @@ class Combiner implements  CombinerInterface{
                 foreach($this->skins as $skinPath){
                     $realPath=$skinPath.$path;
                     if(is_dir($realPath)){
-                        $dirPaths=Utils::scanDir(realpath($realPath),'.'.$this->type,true);
+                        $dirPaths=Utils::scanDir(realpath($realPath),'.'.$this->getType(),true);
                         foreach($dirPaths as $dirPath){
                             $pathKey=str_replace($skinPath,'',$dirPath);
                             $realPaths[$pathKey]=$dirPath;
@@ -219,22 +248,35 @@ class Combiner implements  CombinerInterface{
         }
 
         //Jezlei jest handler
-        if($this->handler){
+        if($this->hasHandler()){
             //Prygotowac text handlerem
-            $handler=$this->handler;
+            $handler=$this->getHandler();
             $text=$handler($text);
         }
 
         //Stworyc folder dla zapisywania pliku
-        $info=pathinfo($this->savePath);
-        if(!is_dir($info['dirname'])){
+        $info=pathinfo($this->getSavePath());
+        if(array_key_exists('dirname', $info) && !is_dir($info['dirname'])){
             mkdir($info['dirname'],0777,true);
         }
 
 
         //Zapisac plik
-        file_put_contents($this->savePath,$text);
+        file_put_contents($this->getSavePath(),$text);
         return $this;
     }
 
+
+    /**
+     * Metoda sprawdza, czy sa wszystkie niezbledne elementy konfiguracyjne potrzebne do wygenerowania
+     * pliku wyjsciowego
+     *
+     * @throws \Netinteractive\Combiner\NoSavePathException
+     */
+    protected function checkConfiguration()
+    {
+        if (!$this->savePath){
+            throw new NoSavePathException();
+        }
+    }
 }

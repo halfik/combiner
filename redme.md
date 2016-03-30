@@ -1,4 +1,9 @@
+Netinteractive\Combiner
+======================
 
+Paczka do budowania pojedyncznych plukow js i css w projekcie.
+
+## Changelog
 
 #### 2.0.2 - 2.0.3
     Dodalem super closury, aby opakowac funkcje anonimowe konfiga.
