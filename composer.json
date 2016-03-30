@@ -6,6 +6,10 @@
         {
             "name": "Michal Shapowalow",
             "email": "michal.shapowalow@netinteractive.pl"
+        },
+        {
+          "name": "Piotr Pryga",
+          "email": "halfik@gmail.com"
         }
     ],
     "require": {
@@ -23,7 +27,7 @@
         ],
         "psr-0": {
             "Netinteractive\\Combiner\\": "src/"
-        }
+        }`
     },
     "minimum-stability": "stable"
 }
