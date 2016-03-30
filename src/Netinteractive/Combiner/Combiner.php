@@ -1,60 +1,168 @@
 <?php namespace Netinteractive\Combiner;
 
 use Netinteractive\Utils\Utils;
-use Netinteractive\Combiner\Interfaces\CombinerInterface;
 
 
-class Combiner implements  CombinerInterface{
+class Combiner
+{
+    public static $OUTPUT_MODE = 0777;
 
-    //Scezki do skinow z ktorych ma byc wygenerowany plik
-    protected $skins=array();
+    /**
+     * Lista wymaganych kluczy pliku konfiguracyjnego
+     * @var array
+     */
+    protected $keysToCheck = array(
+        'savePath',
+        'handler',
+        'paths'
+    );
 
-    //Handler do wygenerownego pliku (minify albo obfuscate)
+    protected $skin;
+    protected $type;
+    protected $mode;
+
+    #Handler do wygenerownego pliku (minify albo obfuscate)
     protected $handler;
 
-    //pliki do zalodownia
+    #pliki do zalodownia
     protected $paths=array();
 
-    //sciezka do ktorej trzeba zapisac wygenerowany plik
+    #sciezka do ktorej trzeba zapisac wygenerowany plik
     protected $savePath;
 
-    //typ plikow do ladowanie
-    protected $type;
+    /**
+     * @param $skin
+     * @param $type
+     * @param $mode
+     */
+   public function make($skin, $mode, $type)
+   {
+        $this->setSkin($skin);
+        $this->setMode($mode);
+        $this->setType($type);
+
+        $config =  \Config("packages.netinteractive.combiner.config.$skin.$type.$mode");
+        $this->loadConfig($config);
+
+       if( \Config::get('app.debug') || !file_exists($this->getSavePath())){
+           $this->combine();
+       }
+
+       return $this->makeUrl();
+   }
+
+    /**
+     * Laczy pliki w jeden
+     * @return $this
+     */
+    public function combine()
+    {
+        $filesList = array();
+        foreach($this->getPaths() AS $path){
+            $currentPath = null;
+            /**
+             * Sprawdzamy czy path mamy jako bezposrednia sciezke, czy tez tablice konfiguracyjna
+             */
+            if (is_array($path)){
+                #pliki dla wersji mobile
+                if (array_key_exists('mobile', $path) && $path['mobile'] == true){
+                    if (!isMobile()){
+                        break;
+                    }
+                }
+
+                #jesli mamy podane jezyki, dla ktorych plik ma byc mergowany
+                if (array_key_exists('langs', $path)){
+                    $langs = $path['langs'];
+                    if (!is_array($langs)){
+                        $langs = array($langs);
+                    }
+
+                    foreach($langs AS $langShort){
+                        if ($langShort == \App::getLocale()){
+                            $currentPath = $path['path'];
+                            break;
+                        }
+                    }
+                }
+            }else{
+                $currentPath = $path;
+            }
+
+            #mozemy nie miec sciezki jesli jest do plik dla konkretnej wersji jezykowej, a nie jest to wersja
+            #aktualnie uzywana przez aplikacje
+            if ($currentPath){
+                if ( is_dir($currentPath) ){
+                    $dirFiles = \Utils::scanDir($path, array('f', 'd'), true);
+
+
+                    foreach ($dirFiles AS $filePath){
+                        $ext = pathinfo($filePath, PATHINFO_EXTENSION);
+                        if ($ext == $this->getType()){
+                            $filesList[] = $filePath;
+                        }
+                    }
+                }
+                else{
+                    $filesList[] = $currentPath;
+                }
+            }
+
+        }
+
+        #unique
+        $filesList = array_unique($filesList);
+
+
+        $content = $this->buildOutputContent($filesList);
+        $this->saveOutputFile($content);
+    }
 
 
     /**
-     * Tworzy objekt na podstawie konfigu, laczy pliki i zwraca url do polącanego pliku
-     * @param array $config
+     * Zapisuje plik wyjsciowy
+     * @param string $content
+     */
+    protected function saveOutputFile($content)
+    {
+        //Tworzymy plik wyjsciowy jesli go nie ma
+        $info = pathinfo($this->getSavePath());
+
+        if(array_key_exists('dirname', $info) && !is_dir($info['dirname'])){
+            mkdir($info['dirname'], self::$OUTPUT_MODE, true);
+        }
+
+        file_put_contents($this->getSavePath(),$content);
+    }
+
+    /**
+     * Buduje tresc do zapisu dla pliku wyjsciowego
+     * @param array $filesList
      * @return string
      */
-    public static function includeFiles($config)
-    {   var_dump($config); exit;
-        $combiner = new self($config);
-        if(\Config::get('app.debug') || !is_file($combiner->getSavePath())){
-            $combiner->combine();
+    protected function buildOutputContent(array $filesList)
+    {
+        $content='';
+        foreach($filesList as $filePath){
+            $content.= file_get_contents($filePath);
         }
-        return $combiner->makeUrl();
-    }
 
-    /**
-     * @return array
-     */
-    public function getSkins(){
-        return $this->skins;
-    }
+        //Jezlei jest handler
+        if($this->hasHandler()){
+            //Prygotowac text handlerem
+            $handler = $this->getHandler();
+            $content = $handler($content);
+        }
 
-    /**
-     * @return mixed
-     */
-    public function getSavePath(){
-        return $this->savePath;
+        return $content;
     }
 
     /**
      * Tworzy url dla pobierania wygenerowanego pliku
      * @return string
      */
-    public function makeUrl(){
+    public function makeUrl()
+    {
         $publicPath = public_path();
 
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'){
@@ -67,100 +175,63 @@ class Combiner implements  CombinerInterface{
     }
 
     /**
-     * @param $savePath
-     * @return $this
-     */
-    public function setSavePath($savePath){
-        $this->savePath=$savePath;
-        return $this;
-    }
-
-    /**
-     * @param null $config
-     */
-    public function __construct($config=null)
-    {
-        if($config){
-            $this->loadConfig($config);
-        }
-    }
-
-    /**
      * Zaladowac konfiguracje
      * @param array $config
      */
     public function loadConfig(array $config)
     {
+        $this->checkConfig($config);
+
+        $serializer = new \SuperClosure\Serializer;
+
+        $handler = $serializer->unserialize($config['handler']);
+        $savePath = $serializer->unserialize($config['savePath']);
+
         $this->setPaths($config['paths']);
-        $this->setHandler($config['handler']);
-        $this->setType($config['type']);
-        $this->setSkins($config['skins']);
-        $this->setSavePath($config['savePath']($this));
+        $this->setHandler($handler);
+        $this->setSavePath($savePath($this));
     }
 
     /**
-     * Ustawic sciezki
-     * @param array $paths
-     * @return $this
+     * Metoda sprawdza, czy sa wszystkie niezbledne elementy konfiguracyjne potrzebne do wygenerowania
+     * pliku wyjsciowego
+     *
+     * @throws \Netinteractive\Combiner\NoConfigException
+     * @throws \Netinteractive\Combiner\ConfigException
      */
-    public function setPaths(array $paths){
-        $this->paths=$paths;
-        return $this;
-    }
-
-    /**
-     * Ustawic skiny
-     * @param $skins
-     * @return $this
-     */
-    public function setSkins($skins){
-        if(!is_array($skins)){
-            $skins=array($skins);
+    protected function checkConfig($config)
+    {
+        if (!is_array($config)){
+            throw new NoConfigException();
         }
-        $this->skins=$skins;
-        return $this;
+
+        foreach ($this->keysToCheck AS $keyName){
+            if (!array_key_exists($keyName, $config)){
+                throw new ConfigException(
+                    $keyName,
+                    $this->getSkin(),
+                    $this->getType(),
+                    $this->getMode()
+                );
+            }
+        }
     }
 
-    /**
-     * Dodac skin
-     * @param $skin
-     * @return $this
-     */
-    public function addSkin($skin){
-        $this->skins[]=$skin;
-        return $this;
-    }
-
 
     /**
-     * @param callable $handler
-     * @return $this
+     * @return mixed
      */
-    public function setHandler($handler){
-        $this->handler=$handler;
-        return $this;
-    }
-
-    /**
-     * @param $type
-     * @return $this
-     */
-    public function setType($type)
+    public function getSkin()
     {
-        $this->type=$type;
-        return $this;
+        return $this->skin;
     }
 
-
     /**
-     * Dodaje lkik do plików ktore trzeba zaladowac
-     * @param string $path - sciezka do pliku wedlug foldery ze skinami
-     * @return $this
+     * @param mixed $skin
      */
-    public function addPath($path)
+    public function setSkin($skin)
     {
-        $this->paths[]=$path;
-        return $this;
+        $this->skin = $skin;
     }
 
     /**
@@ -172,11 +243,27 @@ class Combiner implements  CombinerInterface{
     }
 
     /**
-     * @return \Closure
+     * @param mixed $type
      */
-    public function getHandler()
+    public function setType($type)
     {
-        return $this->handler;
+        $this->type = $type;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMode()
+    {
+        return $this->mode;
+    }
+
+    /**
+     * @param mixed $mode
+     */
+    public function setMode($mode)
+    {
+        $this->mode = $mode;
     }
 
 
@@ -188,95 +275,63 @@ class Combiner implements  CombinerInterface{
         return !empty($this->handler);
     }
 
+
     /**
-     * Laczy pliki w jeden
-     * @return $this
+     * @return \Closure
      */
-    public function combine()
+    public function getHandler()
     {
-        #Sprawdzamy, czy mamy niezbedne dane konfiguracyjne, aby wygnerowac plik wyjsciowy
-        $this->checkConfiguration();
+        return $this->handler;
+    }
 
-        //Prygotwac liste plikow ze wszykich skinow ktore treba podloaczyc
-        foreach($this->skins as $skinPath){
-            $skinFiles=Utils::scanDir(realpath($skinPath),'.'.$this->getType(),true);
-            foreach($skinFiles as $skinFile){
-                $skinFile=str_replace(realpath($skinPath).DIRECTORY_SEPARATOR,'',$skinFile);
-                if(!in_array($skinFile,$this->paths)){
-                    $this->paths[]=$skinFile;
-                }
-            }
-        }
+    /**
+     * @param mixed $handler
+     */
+    public function setHandler($handler)
+    {
+        $this->handler = $handler;
+    }
 
-        //Prygotowac liste plikow skombinowanych ze wszykticz skinow i zewnentrzych plikow
-        $realPaths=array();
-        foreach($this->paths as $path){
-            //Jezeli plik jest zewnentzny (nie ze skina a na pryzklad z paczki)
-            if(strpos($path, public_path())===0){
-                if(is_dir($path)){
-                    $realPaths=array_merge($realPaths, Utils::scanDir(realpath($path),'.'.$this->getType(),true));
-                }
-                else{
-                    $realPaths[]=$path;
-                }
-            }
-            else{
-                //Dodac plik z potrebnego skina
-                foreach($this->skins as $skinPath){
-                    $realPath=$skinPath.$path;
-                    if(is_dir($realPath)){
-                        $dirPaths=Utils::scanDir(realpath($realPath),'.'.$this->getType(),true);
-                        foreach($dirPaths as $dirPath){
-                            $pathKey=str_replace($skinPath,'',$dirPath);
-                            $realPaths[$pathKey]=$dirPath;
-                        }
-                    }
-                    elseif(is_file($realPath)){
-                        $realPaths[$path]=$realPath;
-                    }
+    /**
+     * @return array
+     */
+    public function getPaths()
+    {
+        return $this->paths;
+    }
 
-                }
-            }
+    /**
+     * @param array $paths
+     */
+    public function setPaths($paths)
+    {
+        $this->paths = $paths;
+    }
 
-        }
+    /**
+     * @param $path
+     */
+    public function addPath($path)
+    {
+        $this->paths[] = $path;
+    }
 
-        //Poloczyc zawartosc plikow
-        $realPaths=array_unique($realPaths);
-        $text='';
-        foreach($realPaths as $path){
-            $text.=file_get_contents($path);
-        }
+    /**
+     * @return mixed
+     */
+    public function getSavePath()
+    {
+        return $this->savePath;
+    }
 
-        //Jezlei jest handler
-        if($this->hasHandler()){
-            //Prygotowac text handlerem
-            $handler=$this->getHandler();
-            $text=$handler($text);
-        }
-
-        //Stworyc folder dla zapisywania pliku
-        $info=pathinfo($this->getSavePath());
-        if(array_key_exists('dirname', $info) && !is_dir($info['dirname'])){
-            mkdir($info['dirname'],0777,true);
-        }
-
-
-        //Zapisac plik
-        file_put_contents($this->getSavePath(),$text);
-        return $this;
+    /**
+     * @param mixed $savePath
+     */
+    public function setSavePath($savePath)
+    {
+        $this->savePath = $savePath;
     }
 
 
-    /**
-     * Metoda sprawdza, czy sa wszystkie niezbledne elementy konfiguracyjne potrzebne do wygenerowania
-     * pliku wyjsciowego
-     *
-     * @throws \Netinteractive\Combiner\NoSavePathException
-     */
-    protected function checkConfiguration()
-    {
-        if (!$this->savePath){
-            throw new NoSavePathException();
-        }
-    }
+
 }

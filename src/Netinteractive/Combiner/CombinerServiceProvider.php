@@ -3,7 +3,8 @@
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\AliasLoader;
 
-class CombinerServiceProvider extends ServiceProvider {
+class CombinerServiceProvider extends ServiceProvider
+{
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -23,10 +24,13 @@ class CombinerServiceProvider extends ServiceProvider {
      */
     public function boot()
     {
-        $this->publishes([
-            __DIR__.'/../../config.php' => config_path('/packages/netinteractive/combiner.php'),
-        ], 'config');
+        $config     = realpath(__DIR__.'/../../config/config.php');
+        $this->mergeConfigFrom($config, 'netinteractive.combiner');
 
+
+        $this->publishes([
+            __DIR__.'/../../config/config.php' => config_path('/packages/netinteractive/combiner/config.php'),
+        ], 'config');
     }
 
 	/**

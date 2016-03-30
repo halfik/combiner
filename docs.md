@@ -1,8 +1,7 @@
 Packa słuzy dla połączenia plików js i css w jeden plik
 
 ##Podstawowy prykład użycia
-Mamy strone wsyskie javascripty dla ktorej znaduja sie w folderze **public/js/default/**
-chcemy załadowac te wsyzskie js jako jeden plik **public/all.js**.
+
 
 Zeby to zrobic musimy stworyc configuracyjny plik **config/combiner.php**:
 

@@ -11,12 +11,15 @@
     "require": {
         "php": ">=5.4.0",
         "illuminate/support": "5.2.*",
-	    "netinteractive/utils": "2.0.*",
+	    "netinteractive/utils": ">=2.0.0",
         "jeremeamia/superclosure": "~2.0"
     },
     "autoload": {
         "classmap": [
           "src/Netinteractive/Combiner/Exceptions.php"
+        ],
+        "files": [
+          "src/Netinteractive/Combiner/helpers.php"
         ],
         "psr-0": {
             "Netinteractive\\Combiner\\": "src/"
