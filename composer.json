@@ -1,6 +1,6 @@
 {
     "name": "netinteractive/combiner",
-    "version": "@dev",
+    "version": "2.0.5",
     "description": "Combine js and css",
     "authors": [
         {

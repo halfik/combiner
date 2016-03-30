@@ -1,82 +1,82 @@
-Packa słuzy dla połączenia plików js i css w jeden plik
+Packa słuzy dla połączenia plików js i css w jeden plik.
+
+Laduje zarowno pliki lokalne jak i zdalne.
+W przypadku podania calego katalogu, zostana zaladowane wszystkie pliki danego typu z tego katalogu jak i jego podkatalogow.
+
+W konfigu mozemy skonfigurowac, czy dany plik mergowac tylko dla konkretnej wersji jezykowej lub mobile.
 
 ##Podstawowy prykład użycia
 
+Zmergowanie plikow "css" oraz "js" skina "default" dla "backend"u:
 
-Zeby to zrobic musimy stworyc configuracyjny plik **config/combiner.php**:
+    Layout:
+        <link href="{{ \Combiner::make('default', 'backend', 'css') }}" rel="stylesheet">
+        <script src="{{ \Combiner::make('default', 'backend', 'js') }}"></script>
 
-    array(
-       'skins'=>public_path('public/js/default/'),
-       'type'=>'js',
-       'savePath'=>function(\Netinteractive\combiner\Combiner $combiner){
-           return public_path('all.js')
-       }
-    );
-    
-I dodac do **resources/views/index.blade.php**
 
-<script src="<?php echo \Combiner::includeFiles(\Config::get('combiner'))?>"></script>
+W pliku konfiguracyjnym, glownym kluczem jest nazwa skina, nastepnie typ plikow, a dalej backend lub frontend.
+Ponizszy przyklad zawartosc katalogu "packages/netinteractive/plugins" laduje tylko dla urzadzen mobilnych i tylko dla wersji "en".
+
+    Konfig:
+        return array(
+            #key is a skin name
+            'default' => array(
+                'js'=>array(
+                    'backend'=>array(
+                        //Funkcja do generownia sciezki dla zapisywania wygenerowanego pliku
+                        'savePath'=>  $serializer->serialize(function(\Netinteractive\combiner\Combiner $combiner) use ($makeSavePath){
+                            return $makeSavePath($combiner);
+                        }),
+        
+                        //Handler dla modyfikownia sklejonego pliku (minify, obfuscat, etc)
+                        'handler'=> $serializer->serialize(function($text) use ($handleJs){
+                            return $handleJs($text);
+                        }),
+        
+                        //pliki ktore theba zaladowac w pierwszej kolejnosci
+                        'paths'=>array(
+                            array(
+                                'path' => public_path('packages/netinteractive/plugins'),
+                                'mobile' => true,
+                                'langs' => array('en')
+                            ),
+                            'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js',
+                            //public_path('packages/netinteractive/plugins'),
+                            public_path('packages/netinteractive/jQuery/jquery.min.js'),
+                            public_path('packages/netinteractive/easyUi/jquery.easyui.min.js'),
+                        ),
+                    ),
+        
+                    'frontend'=>array(
+                        'savePath' => $serializer->serialize(function(\Netinteractive\combiner\Combiner $combiner) use ($makeSavePath){
+                            return $makeSavePath($combiner);
+                        }),
+                        'handler' => $serializer->serialize(function($text) use($handleJs){
+                            return $handleJs($text);
+                        }),
+                        'type'=>'js',
+                        'paths'=>array(
+                            public_path('packages/netinteractive/jQuery/jquery.min.js'),
+        
+                        )
+                    )
+                ),
+            ),
+        
+        );
+        
+
 
 ##Kolejność ładowania plików
-Logika naszych js wymbaga żeby plik **public/js/default/list.js** ladował sie przed plikiem **public/js/default/calendar.js**
+Pliki ladowane sa w kolejnosci podanej w pliku konfiguracyjnym.
+Jesli ladujemy pliki z calego katalogu, a checmy aby jeden z nich zaladowal sie przed innymi, to dodajemy go
+do konfiga, przed wpisem dla katalogu.
 
-    array(
-       'skins'=>public_path('public/js/default/'),
-       'type'=>'js',
-       'savePath'=>function(\Netinteractive\combiner\Combiner $combiner){
-           return public_path('all.js')
-       },
-       paths=>array(
-            'list.js',
-            'calendar.js'
-       )
-    );
-    
-W taki sposob mozemy wskazac kolejnosc nie tylko plikow a i folderow
-
-##Ładowanie zewnentzych plików
-Chcemy do naszego pliku dodać plik jquery.js ktory się znajduje poza folderem ze skinem i musi byc zaladowany w pirwszej kolejnosci
-
-    array(
-       'skins'=>public_path('public/js/default/'),
-       'type'=>'js',
-       'savePath'=>function(\Netinteractive\combiner\Combiner $combiner){
-           return public_path('all.js')
-       },
-       paths=>array(
-            public_path('packages/netinteractive/jQuery/jquery.min.js'),
-            'list.js',
-            'calendar.js'
-       )
-    );
-W taki sposob mozemy ladowac nie tylko pliki a i foldery
-
-##Kombinacja pliku z różnych skinów
-Potrebujemy stwozyc skin który zdiała tak samo jak defoltowy za wyjątkiem pliku calendar.js i dodatkowej funkcionalnosci planner.js ktorej nie potrzebujemy w
-defoltowym skinie
-
-- Tworzymy nowy folder **public/js/extend/**
-- Dodjemy do tego foledry plik **canedar.js** z modyfikowną funkcionalnoscią i plik **planner.js** z nową funkcionalnscia
-- Tworzymy plik konfiguracyjny
-
-
-    array(
-       'skins'=>array(public_path('public/js/default/'),public_path('public/js/extend/')),
-       'type'=>'js',
-       'savePath'=>function(\Netinteractive\combiner\Combiner $combiner){
-           return public_path('all.js')
-       },
-    );
-
-Teraz kombiner podłaczy wsyskie pliki ktore są z foldera *public/js/default/* za wyjatkiem tych plików ktore są w **public/js/extend/**
-Czyli logika jest taka jezeli pliku nie ma w folderze, szukaj plik w popzerdnim folderze.
 
 #Modyfikacja wygenerowanego pliku
-Chcemy zmodyfikować wygenerowany plik, napzyklad wyciac niepotzebne spacje albo zrobic obfuscacjie
+Chcemy zmodyfikować wygenerowany plik:
 
     array(
-       'skins'=>array(public_path('public/js/default/'),public_path('public/js/extend/')),
-       'type'=>'js',
        'savePath'=>function(\Netinteractive\combiner\Combiner $combiner) use ($makeSavePath){
            return public_path('all.js')
        },

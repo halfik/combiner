@@ -5,6 +5,9 @@ Paczka do budowania pojedyncznych plukow js i css w projekcie.
 
 ## Changelog
 
+### 2.0.5
+     Przepisalnie paczki. Inny interfase combinera oraz sposob konfiguracji.
+
 #### 2.0.2 - 2.0.3
     Dodalem super closury, aby opakowac funkcje anonimowe konfiga.
     Usunalem wszystkie typowania \Closure.

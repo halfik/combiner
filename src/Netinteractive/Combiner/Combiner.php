@@ -66,9 +66,9 @@ class Combiner
             if (is_array($path)){
                 #pliki dla wersji mobile
                 if (array_key_exists('mobile', $path) && $path['mobile'] == true){
-                    if (!isMobile()){
+                    /*if (!isMobile()){
                         break;
-                    }
+                    }*/
                 }
 
                 #jesli mamy podane jezyki, dla ktorych plik ma byc mergowany
