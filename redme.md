@@ -1,5 +1,5 @@
 Netinteractive\Combiner
-======================
+=======================
 
 Paczka do budowania pojedyncznych plukow js i css w projekcie.
 
@@ -10,6 +10,9 @@ Patrz do docs.md
 
 ## Changelog
 
+
+#### 2.0.7
+     Fixed config merge.
 
 #### 2.0.6
      Dodalem do konfiga, do funkcji odpowiedzialnej za dostarczenie sciezki i nazwy pliku output, obsluge dla mobile.

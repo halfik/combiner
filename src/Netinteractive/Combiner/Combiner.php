@@ -44,9 +44,9 @@ class Combiner
         $config =  \Config("packages.netinteractive.combiner.config.$skin.$type.$mode");
         $this->loadConfig($config);
 
-       if( \Config::get('app.debug') || !file_exists($this->getSavePath())){
+        if( \Config::get('app.debug') || !file_exists($this->getSavePath())){
            $this->combine();
-       }
+        }
 
        return $this->makeUrl();
     }
@@ -109,7 +109,6 @@ class Combiner
             }
 
         }
-
         #unique
         $filesList = array_unique($filesList);
 
@@ -134,7 +133,8 @@ class Combiner
             mkdir($info['dirname'], self::$OUTPUT_MODE, true);
         }
 
-        file_put_contents($this->getSavePath(),$content);
+        @unlink($this->getSavePath());
+        @file_put_contents($this->getSavePath(),$content);
     }
 
     /**

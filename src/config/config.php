@@ -26,19 +26,18 @@ return array(
     'default' => array(
         'js' => array(
             'backend'=>array(
-                //Funkcja do generownia sciezki dla zapisywania wygenerowanego pliku
+                #Funkcja do generownia sciezki dla zapisywania wygenerowanego pliku
                 'savePath'=>  $serializer->serialize(function(\Netinteractive\combiner\Combiner $combiner) use ($makeSavePath){
                     return $makeSavePath($combiner);
                 }),
 
-                //Handler dla modyfikownia sklejonego pliku (minify, obfuscat, etc)
+                #Handler dla modyfikownia sklejonego pliku (minify, obfuscat, etc)
                 'handler'=> $serializer->serialize(function($text) use ($handleJs){
                     return $handleJs($text);
                 }),
 
-                //pliki ktore theba zaladowac w pierwszej kolejnosci
+                #pliki ktore theba zaladowac w pierwszej kolejnosci
                 'paths'=>array(
-                    public_path('packages/netinteractive/jQuery/jquery.min.js'),
                 ),
             ),
 
@@ -51,28 +50,23 @@ return array(
                 }),
                 'type'=>'js',
                 'paths'=>array(
-                    public_path('packages/netinteractive/jQuery/jquery.min.js'),
-
-                )
+                 ),
             )
         ),
         'css' => array(
             'backend' => array(
-                //Funkcja do generownia sciezki dla zapisywania wygenerowanego pliku
+                #Funkcja do generownia sciezki dla zapisywania wygenerowanego pliku
                 'savePath'=>  $serializer->serialize(function(\Netinteractive\combiner\Combiner $combiner) use ($makeSavePath){
                     return $makeSavePath($combiner);
                 }),
 
-                //Handler dla modyfikownia sklejonego pliku (minify, obfuscat, etc)
+                #Handler dla modyfikownia sklejonego pliku (minify, obfuscat, etc)
                 'handler'=> $serializer->serialize(function($text) use ($handleJs){
                     return $handleJs($text);
                 }),
 
-                //pliki ktore theba zaladowac w pierwszej kolejnosci
+                #pliki ktore theba zaladowac w pierwszej kolejnosci
                 'paths'=>array(
-                    public_path('/packages/netinteractive/easyUi/themes/bootstrap/easyui.css'),
-                    public_path('/packages/netinteractive/easyUi/themes/icon.css'),
-                    public_path('/packages/netinteractive/easyUi/themes/color.css'),
                 ),
 
             )
