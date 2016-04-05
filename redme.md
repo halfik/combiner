@@ -11,7 +11,7 @@ Patrz do docs.md
 ## Changelog
 
 
-#### 2.0.7 - 2.0.8
+#### 2.0.7 - 2.0.9
      Fixed config merge.
 
 #### 2.0.6
