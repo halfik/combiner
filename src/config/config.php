@@ -21,9 +21,11 @@ $handleJs = function($js){
     return $js;
 };
 
+
 return array(
     #key is a skin name
     'default' => array(
+        'test' => '33',
         'js' => array(
             'backend'=>array(
                 #Funkcja do generownia sciezki dla zapisywania wygenerowanego pliku

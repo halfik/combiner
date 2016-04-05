@@ -42,6 +42,7 @@ class Combiner
         $this->setType($type);
 
         $config =  \Config("packages.netinteractive.combiner.config.$skin.$type.$mode");
+        \debug(\Config("packages.netinteractive.combiner"));
         $this->loadConfig($config);
 
         if( \Config::get('app.debug') || !file_exists($this->getSavePath())){

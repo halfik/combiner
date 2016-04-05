@@ -26,7 +26,7 @@ class CombinerServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__.'/../../config/config.php' => config_path('/packages/netinteractive/combiner/config.php'),
-        ], 'netinteractive.combiner');
+        ], 'netinteractive.combiner.config');
     }
 
 	/**
