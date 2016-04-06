@@ -10,6 +10,11 @@ Patrz do docs.md
 
 ## Changelog
 
+#### 2.0.14
+    Usunalem array_unique. Unique wartosci zapewnia generowaniu tablicy w oparciu o klucze, gdzie kluczem jest nazwa pliku.
+    Dodatkowo jesli plik zostal dodany jako combine=>false, a jakis jakis inny modul dodal go jako combiner=true, nie
+    trafi on na liste plikow do zmerowania. Pliki do include maja priorytet nad plikami do mergea.
+
 #### 2.0.13
     Fix bledu, gdzie Combiner->html() nie odroznila css od js.
 

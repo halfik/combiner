@@ -144,26 +144,58 @@ class Combiner
                     foreach ($dirFiles AS $filePath){
                         $ext = pathinfo($filePath, PATHINFO_EXTENSION);
                         if ($ext == $this->getType()){
-                            $filesList[$type][] = $filePath;
+                            $key = $this->fileKey($filePath);
+                            $filesList[$type][$key] = $filePath;
                         }
                     }
                 }
                 else{
-                    $filesList[$type][] = $currentPath;
+                    $key = $this->fileKey($currentPath);
+                    $filesList[$type][$key] = $currentPath;
                 }
             }
 
         }
 
-
+        \debug($filesList);
+        $filesList = $this->clearFileList($filesList);
+        \debug($filesList);
         #unique
         if ($combine == true){
-            return array_unique($filesList['combine']);
+            return $filesList['combine'];
         }
         
-        return  array_unique($filesList['html']);
+        return  $filesList['html'];
     }
 
+
+    /**
+     * Metoda usuwa z listy plikow do comine, pliki ktore sa w wersji plain
+     * @param array $fileList
+     * @return array
+     */
+    private function clearFileList(array $fileList)
+    {
+        if (array_key_exists('combine', $fileList) && array_key_exists('html', $fileList)){
+
+            foreach ($fileList['combine'] AS $key=>$filePath){
+                if (isSet($fileList['html'][$key])){
+                    unset($fileList['combine'][$key]);
+                }
+            }
+        }
+
+        return $fileList;
+    }
+
+    /**
+     * @param string $filePath
+     * @return mixed
+     */
+    private function fileKey($filePath)
+    {
+        return basename($filePath);
+    }
 
     /**
      * Zapisuje plik wyjsciowy
