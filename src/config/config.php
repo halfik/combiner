@@ -22,11 +22,12 @@ $handleJs = function($js){
 };
 
 
+
 return array(
     #key is a skin name
     'default' => array(
-        'test' => '33',
         'js' => array(
+            'test_123' => "combiner package",
             'backend'=>array(
                 #Funkcja do generownia sciezki dla zapisywania wygenerowanego pliku
                 'savePath'=>  $serializer->serialize(function(\Netinteractive\combiner\Combiner $combiner) use ($makeSavePath){

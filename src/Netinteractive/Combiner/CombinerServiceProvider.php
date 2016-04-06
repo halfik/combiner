@@ -26,7 +26,7 @@ class CombinerServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__.'/../../config/config.php' => config_path('/packages/netinteractive/combiner/config.php'),
-        ], 'netinteractive.combiner.config');
+        ], 'config');
     }
 
 	/**
@@ -37,6 +37,7 @@ class CombinerServiceProvider extends ServiceProvider
 	public function register()
 	{
         $config     = realpath(__DIR__.'/../../config/config.php');
+
         $this->mergeConfigFrom($config, 'packages.netinteractive.combiner.config');
 
 
@@ -50,6 +51,7 @@ class CombinerServiceProvider extends ServiceProvider
             AliasLoader::getInstance()->alias('Combiner','Netinteractive\Combiner\Facades\CombinerFacade');
         });
     }
+    
 
 	/**
 	 * Get the services provided by the provider.
