@@ -35,7 +35,7 @@ class Combiner
      * @param $type
      * @param $mode
      */
-    public function make($skin, $mode, $type)
+    public function load($skin, $mode, $type)
     {
         $this->setSkin($skin);
         $this->setMode($mode);
@@ -45,11 +45,23 @@ class Combiner
         
         $this->loadConfig($config);
 
-        if( \Config::get('app.debug') || !file_exists($this->getSavePath())){
-           $this->combine();
+        return $this;
+    }
+
+    /**
+     * Generuje html dla plikow, ktore nie wchodza do mergea
+     * @return string
+     */
+    public function html()
+    {
+        $html = '';
+        $fileList = $this->buildFileList(false);
+
+        foreach ($fileList AS $file){
+            $html .= '<link href="'.$file.'" rel="stylesheet">';
         }
 
-       return $this->makeUrl();
+        return $html;
     }
 
     /**
@@ -58,12 +70,41 @@ class Combiner
      */
     public function combine()
     {
-        $filesList = array();
+        if( \Config::get('app.debug') || !file_exists($this->getSavePath())){
+            #budowanie tresci
+            $content = $this->buildOutputContent($this->buildFileList());
+
+            #zapis
+            $this->saveOutputFile($content);
+        }
+
+        return $this->makeUrl();
+    }
+
+    /**
+     * Builds file list
+     * @param boolean $combine - true, zwraca pliki ktore powinne byc zmergowane. false, pliki do html
+     * @return array
+     */
+    public function buildFileList($combine=true)
+    {
+        $filesList = array(
+            'combine' => array(),
+            'html' => array()
+        );
+
         foreach($this->getPaths() AS $path){
             $currentPath = null;
-
-            # sprawdzamy czy path mamy jako bezposrednia sciezke, czy tez tablice konfiguracyjna
+            $type = 'combine';
+            
+            #sprawdzamy czy path mamy jako bezposrednia sciezke, czy tez tablice konfiguracyjna
             if (is_array($path)){
+                #combine
+                if (array_key_exists('combine', $path) && $path['combine'] == false){
+                    $type = 'html';
+                    $currentPath = $path['path'];
+                }
+
                 #pliki dla wersji mobile
                 if (array_key_exists('mobile', $path) && $path['mobile'] == true){
                     if (!isMobile()){
@@ -96,28 +137,27 @@ class Combiner
                 if ( is_dir($currentPath) ){
                     $dirFiles = \Utils::scanDir($path, array('f', 'd'), true);
 
-
                     foreach ($dirFiles AS $filePath){
                         $ext = pathinfo($filePath, PATHINFO_EXTENSION);
                         if ($ext == $this->getType()){
-                            $filesList[] = $filePath;
+                            $filesList[$type][] = $filePath;
                         }
                     }
                 }
                 else{
-                    $filesList[] = $currentPath;
+                    $filesList[$type][] = $currentPath;
                 }
             }
 
         }
+
+        \debug($filesList);
         #unique
-        $filesList = array_unique($filesList);
-
-        #budowanie tresci
-        $content = $this->buildOutputContent($filesList);
-
-        #zapis
-        $this->saveOutputFile($content);
+        if ($combine == true){
+            return array_unique($filesList['combine']);
+        }
+        
+        return  array_unique($filesList['html']);
     }
 
 

@@ -10,8 +10,9 @@ W konfigu mozemy skonfigurowac, czy dany plik mergowac tylko dla konkretnej wers
 Zmergowanie plikow "css" oraz "js" skina "default" dla "backend"u:
 
     Layout:
-        <link href="{{ \Combiner::make('default', 'backend', 'css') }}" rel="stylesheet">
-        <script src="{{ \Combiner::make('default', 'backend', 'js') }}"></script>
+        <link href="[[ \Combiner::load('default', 'backend', 'css')->combine() ]]" rel="stylesheet">
+        
+        <script src="[[ \Combiner::load('default', 'backend', 'js')->combine() ]]"></script>
 
 
 W pliku konfiguracyjnym, glownym kluczem jest nazwa skina, nastepnie typ plikow, a dalej backend lub frontend.
@@ -66,13 +67,41 @@ Ponizszy przyklad zawartosc katalogu "packages/netinteractive/plugins" laduje ty
         );
         
 
+##Dodanie plikow bez mergowania
+
+    Layout:
+          [[ \Combiner::load('default', 'backend', 'css')->html() ]]
+            
+
+    Konfig:
+         return array(
+                    #key is a skin name
+                    'default' => array(
+                        'css'=>array(
+                            'backend'=>array(
+                               
+                                //pliki ktore theba zaladowac w pierwszej kolejnosci
+                                'paths'=>array(
+                                    array(
+                                        'path' => public_path('packages/netinteractive/test/my.css'),
+                                        'combine' => false,
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                
+                );
+        
+
+
 ##Kolejność ładowania plików
 Pliki ladowane sa w kolejnosci podanej w pliku konfiguracyjnym.
 Jesli ladujemy pliki z calego katalogu, a checmy aby jeden z nich zaladowal sie przed innymi, to dodajemy go
 do konfiga, przed wpisem dla katalogu.
 
 
-#Modyfikacja wygenerowanego pliku
+##Modyfikacja wygenerowanego pliku
 Chcemy zmodyfikować wygenerowany plik:
 
     array(

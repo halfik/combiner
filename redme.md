@@ -11,14 +11,18 @@ Patrz do docs.md
 ## Changelog
 
 
+#### 2.0.11
+    Zmiana interfejsu dla combine. Dodalem tez mozliwosc budowania czystego htmla dla pojedynczych plikow.
+    Przyklad i opis jest w docs.md
+
 #### 2.0.7 - 2.0.10
-     Fixed config merge.
+    Fixed config merge.
 
 #### 2.0.6
-     Dodalem do konfiga, do funkcji odpowiedzialnej za dostarczenie sciezki i nazwy pliku output, obsluge dla mobile.
+    Dodalem do konfiga, do funkcji odpowiedzialnej za dostarczenie sciezki i nazwy pliku output, obsluge dla mobile.
 
 #### 2.0.5
-     Przepisalnie paczki. Inny interfase combinera oraz sposob konfiguracji.
+    Przepisalnie paczki. Inny interfase combinera oraz sposob konfiguracji.
 
 #### 2.0.2 - 2.0.3
     Dodalem super closury, aby opakowac funkcje anonimowe konfiga.
