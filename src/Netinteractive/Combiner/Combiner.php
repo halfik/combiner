@@ -157,9 +157,9 @@ class Combiner
 
         }
 
-        \debug($filesList);
+
         $filesList = $this->clearFileList($filesList);
-        \debug($filesList);
+        
         #unique
         if ($combine == true){
             return $filesList['combine'];
