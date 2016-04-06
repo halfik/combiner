@@ -11,7 +11,7 @@ Patrz do docs.md
 ## Changelog
 
 
-#### 2.0.11
+#### 2.0.11 - 2.0.12
     Zmiana interfejsu dla combine. Dodalem tez mozliwosc budowania czystego htmla dla pojedynczych plikow.
     Przyklad i opis jest w docs.md
 

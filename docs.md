@@ -83,9 +83,9 @@ Ponizszy przyklad zawartosc katalogu "packages/netinteractive/plugins" laduje ty
                                 //pliki ktore theba zaladowac w pierwszej kolejnosci
                                 'paths'=>array(
                                     array(
-                                        'path' => public_path('packages/netinteractive/test/my.css'),
-                                        'combine' => false,
-                                    ),
+                                           'combine' => false,
+                                           'path' =>  '/packages/netinteractive/admin/angulr/src/css/font.css'
+                                       ),
                                 ),
                             ),
                         ),
