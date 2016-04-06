@@ -10,6 +10,8 @@ Patrz do docs.md
 
 ## Changelog
 
+#### 2.0.13
+    Fix bledu, gdzie Combiner->html() nie odroznila css od js.
 
 #### 2.0.11 - 2.0.12
     Zmiana interfejsu dla combine. Dodalem tez mozliwosc budowania czystego htmla dla pojedynczych plikow.

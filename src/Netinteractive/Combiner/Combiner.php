@@ -58,7 +58,11 @@ class Combiner
         $fileList = $this->buildFileList(false);
 
         foreach ($fileList AS $file){
-            $html .= '<link href="'.$file.'" rel="stylesheet">';
+            if ($this->getType() == 'css'){
+                $html .= '<link href="'.$file.'" rel="stylesheet">';
+            }else{
+                $html .= '<script src="'.$file.'"></script>';
+            }
         }
 
         return $html;
@@ -151,7 +155,7 @@ class Combiner
 
         }
 
-        \debug($filesList);
+
         #unique
         if ($combine == true){
             return array_unique($filesList['combine']);
