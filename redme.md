@@ -10,6 +10,9 @@ Patrz do docs.md
 
 ## Changelog
 
+#### 2.0.20
+    Fix bledu, gdzie dla konfiguracji combine=true - nie mergowalo plikow.
+    
 #### 2.0.19
     Dopisalem mechanizm tagowania. Opis w docs.md
 

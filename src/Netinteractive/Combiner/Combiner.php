@@ -105,10 +105,11 @@ class Combiner
 
             #sprawdzamy czy path mamy jako bezposrednia sciezke, czy tez tablice konfiguracyjna
             if (is_array($path)){
+                $currentPath = $path['path'];
+
                 #combine
                 if (array_key_exists('combine', $path) && $path['combine'] == false){
                     $type = 'html';
-                    $currentPath = $path['path'];
                 }
 
                 #pliki dla wersji mobile
@@ -134,16 +135,19 @@ class Combiner
                 }
 
                 #tagi
-                if ($tag){
-                    if (!array_key_exists('tag', $path)  || $path['tag'] != $tag){
-                        $currentPath = null;
+                if ($type == 'html'){
+                    if ($tag){
+                        if (!array_key_exists('tag', $path)  || $path['tag'] != $tag){
+                            $currentPath = null;
+                        }
+                    }
+                    else{
+                        if (array_key_exists('tag', $path)){
+                            $currentPath = null;
+                        }
                     }
                 }
-                else{
-                    if (array_key_exists('tag', $path)){
-                        $currentPath = null;
-                    }
-                }
+
 
             }
             else{
@@ -174,7 +178,7 @@ class Combiner
 
 
         $filesList = $this->clearFileList($filesList);
-        
+        \debug($filesList);
         #unique
         if ($combine == true){
             return $filesList['combine'];
