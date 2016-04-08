@@ -10,6 +10,9 @@ Patrz do docs.md
 
 ## Changelog
 
+#### 2.0.22
+    Zamiana paczki "jeremeamia/superclosure" na "opis/closure"
+
 #### 2.0.20 - 2.0.21
     Fix bledu, gdzie dla konfiguracji combine=true - nie mergowalo plikow.
     
