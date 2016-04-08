@@ -50,12 +50,13 @@ class Combiner
 
     /**
      * Generuje html dla plikow, ktore nie wchodza do mergea
+     * @param string $tag
      * @return string
      */
-    public function html()
+    public function html($tag=null)
     {
         $html = '';
-        $fileList = $this->buildFileList(false);
+        $fileList = $this->buildFileList(false, $tag);
 
         foreach ($fileList AS $file){
             if ($this->getType() == 'css'){
@@ -88,9 +89,10 @@ class Combiner
     /**
      * Builds file list
      * @param boolean $combine - true, zwraca pliki ktore powinne byc zmergowane. false, pliki do html
+     * @param string $tag - jesli podany, zostana zwrocone pliki otagowane wskazanym tagiem
      * @return array
      */
-    public function buildFileList($combine=true)
+    public function buildFileList($combine=true, $tag=null)
     {
         $filesList = array(
             'combine' => array(),
@@ -100,7 +102,7 @@ class Combiner
         foreach($this->getPaths() AS $path){
             $currentPath = null;
             $type = 'combine';
-            
+
             #sprawdzamy czy path mamy jako bezposrednia sciezke, czy tez tablice konfiguracyjna
             if (is_array($path)){
                 #combine
@@ -130,6 +132,19 @@ class Combiner
                         }
                     }
                 }
+
+                #tagi
+                if ($tag){
+                    if (!array_key_exists('tag', $path)  || $path['tag'] != $tag){
+                        $currentPath = null;
+                    }
+                }
+                else{
+                    if (array_key_exists('tag', $path)){
+                        $currentPath = null;
+                    }
+                }
+
             }
             else{
                 $currentPath = $path;

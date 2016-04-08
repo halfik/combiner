@@ -10,6 +10,9 @@ Patrz do docs.md
 
 ## Changelog
 
+#### 2.0.19
+    Dopisalem mechanizm tagowania. Opis w docs.md
+
 #### 2.0.18
     Pliki includowane w layout rozdzielane sa teraz znakiem nowej lini.
 

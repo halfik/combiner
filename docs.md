@@ -5,7 +5,7 @@ W przypadku podania calego katalogu, zostana zaladowane wszystkie pliki danego t
 
 W konfigu mozemy skonfigurowac, czy dany plik mergowac tylko dla konkretnej wersji jezykowej lub mobile.
 
-##Podstawowy prykład użycia
+## Podstawowy prykład użycia
 
 Zmergowanie plikow "css" oraz "js" skina "default" dla "backend"u:
 
@@ -66,7 +66,7 @@ Ponizszy przyklad zawartosc katalogu "packages/netinteractive/plugins" laduje ty
         );
         
 
-##Dodanie plikow bez mergowania
+## Dodanie plikow bez mergowania
 
     Layout:
           [[ \Combiner::load('default', 'backend', 'css')->html() ]]
@@ -94,13 +94,51 @@ Ponizszy przyklad zawartosc katalogu "packages/netinteractive/plugins" laduje ty
         
 
 
-##Kolejność ładowania plików
+## Kolejność ładowania plików
 Pliki ladowane sa w kolejnosci podanej w pliku konfiguracyjnym.
 Jesli ladujemy pliki z calego katalogu, a checmy aby jeden z nich zaladowal sie przed innymi, to dodajemy go
 do konfiga, przed wpisem dla katalogu.
 
+## Tagowanie
 
-##Modyfikacja wygenerowanego pliku
+Plik konfiguracyjny:
+
+    return array(
+        #key is a skin name
+        'default' => array(
+            'js' => array(
+                'backend'=>array(
+    
+                    #pliki ktore theba zaladowac w pierwszej kolejnosci
+                    'paths'=>array(
+                        array(
+                            'combine' => false,
+                            'path' =>   '/packages/netinteractive/admin/'.AngulrServiceProvider::$modName.'/libs/jquery/bootstrap/dist/js/bootstrap.js',
+                        ),
+                        array(
+                            'combine' => false,
+                            'tag' => 'front',
+                            'path' =>   '/packages/netinteractive/admin/'.AngulrServiceProvider::$modName.'/libs/angular/angular/angular.js',
+                        ),
+                )
+            )
+        )
+    );
+    
+Layout (do metody html, przekazujemy nazwe taga):
+
+     [[ \Combiner::load('default', 'backend', 'js')->html('front') ]]
+    
+    <script src="[[ \Combiner::load('default', 'backend', 'js')->combine() ]]"></script>
+
+    [[ \Combiner::load('default', 'backend', 'js')->html() ]]
+    
+
+html('front') wstawi nam w layoucie tylko i wylacznie pliki otagowane "front".
+Natomiast html() wstawi tylko i wylacznie pliki wogole nie otagowane.
+
+
+## Modyfikacja wygenerowanego pliku
 Chcemy zmodyfikować wygenerowany plik:
 
     array(
