@@ -59,9 +59,9 @@ class Combiner
 
         foreach ($fileList AS $file){
             if ($this->getType() == 'css'){
-                $html .= '<link href="'.$file.'" rel="stylesheet">';
+                $html .= '<link href="'.$file.'" rel="stylesheet">'."\n";
             }else{
-                $html .= '<script src="'.$file.'"></script>';
+                $html .= '<script src="'.$file.'"></script>'."\n";
             }
         }
 

@@ -10,12 +10,15 @@ Patrz do docs.md
 
 ## Changelog
 
+#### 2.0.18
+    Pliki includowane w layout rozdzielane sa teraz znakiem nowej lini.
+
 #### 2.0.17
-    Zamiane tagow php(/**/) w wynik evala w mergowanych plikach, przenioslek jaki static do Combiner::replacePhp($content)
+    Zamiane tagow php(/**/) w wynik evala w mergowanych plikach, przenioslek jaki static do Combiner::replacePhp($content).
 
 #### 2.0.16
     Zmienilem sposob deklaracji sciezek do plikow dla combine - teraz public_path jest automatycznie dodawany przez combiner w trakcie budowania contentu
-    pliki wynikowe._=
+    pliki wynikowe.
 
 #### 2.0.14 - 2.0.15
     Usunalem array_unique. Unique wartosci zapewnia generowaniu tablicy w oparciu o klucze, gdzie kluczem jest nazwa pliku.
