@@ -10,7 +10,7 @@ Patrz do docs.md
 
 ## Changelog
 
-#### 2.0.20
+#### 2.0.20 - 2.0.21
     Fix bledu, gdzie dla konfiguracji combine=true - nie mergowalo plikow.
     
 #### 2.0.19
