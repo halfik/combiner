@@ -13,12 +13,8 @@ $makeSavePath = function(\Netinteractive\Combiner\Combiner $combiner){
     return public_path($path);
 };
 
-$handleJs = function($js){
-    $js = preg_replace_callback("/php\(\/\*(.*)\*\/\)/",function($matches){
-        return eval("return json_encode(".$matches[1].');');
-    },$js);
-
-    return $js;
+$handleContent = function($js){
+    return \Combiner::replacePhp($js);
 };
 
 
@@ -34,8 +30,8 @@ return array(
                 }),
 
                 #Handler dla modyfikownia sklejonego pliku (minify, obfuscat, etc)
-                'handler'=> $serializer->serialize(function($text) use ($handleJs){
-                    return $handleJs($text);
+                'handler'=> $serializer->serialize(function($text) use ($handleContent){
+                    return $handleContent($text);
                 }),
 
                 #pliki ktore theba zaladowac w pierwszej kolejnosci
@@ -47,8 +43,8 @@ return array(
                 'savePath' => $serializer->serialize(function(\Netinteractive\combiner\Combiner $combiner) use ($makeSavePath){
                     return $makeSavePath($combiner);
                 }),
-                'handler' => $serializer->serialize(function($text) use($handleJs){
-                    return $handleJs($text);
+                'handler' => $serializer->serialize(function($text) use($handleContent){
+                    return $handleContent($text);
                 }),
                 'type'=>'js',
                 'paths'=>array(
@@ -63,8 +59,8 @@ return array(
                 }),
 
                 #Handler dla modyfikownia sklejonego pliku (minify, obfuscat, etc)
-                'handler'=> $serializer->serialize(function($text) use ($handleJs){
-                    return $handleJs($text);
+                'handler'=> $serializer->serialize(function($text) use ($handleContent){
+                    return $handleContent($text);
                 }),
 
                 #pliki ktore theba zaladowac w pierwszej kolejnosci

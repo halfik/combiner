@@ -272,6 +272,20 @@ class Combiner
     }
 
     /**
+     * Replaces  php() with eval values
+     * @param string $content
+     * @return mixed
+     */
+    public static function replacePhp($content)
+    {
+        $content = preg_replace_callback("/php\(\/\*(.*)\*\/\)/",function($matches){
+            return eval("return json_encode(".$matches[1].');');
+        },$content);
+        
+        return $content;
+    }
+    
+    /**
      * Metoda sprawdza, czy sa wszystkie niezbledne elementy konfiguracyjne potrzebne do wygenerowania
      * pliku wyjsciowego
      *
