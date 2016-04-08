@@ -223,7 +223,7 @@ class Combiner
     {
         $content='';
         foreach($filesList as $filePath){
-            $content.= file_get_contents($filePath);
+            $content.= file_get_contents(public_path($filePath));
         }
 
         //Jezlei jest handler

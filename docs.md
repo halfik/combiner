@@ -37,14 +37,13 @@ Ponizszy przyklad zawartosc katalogu "packages/netinteractive/plugins" laduje ty
                         //pliki ktore theba zaladowac w pierwszej kolejnosci
                         'paths'=>array(
                             array(
-                                'path' => public_path('packages/netinteractive/plugins'),
+                                'path' => '/packages/netinteractive/plugins',
                                 'mobile' => true,
                                 'langs' => array('en')
                             ),
                             'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js',
-                            //public_path('packages/netinteractive/plugins'),
-                            public_path('packages/netinteractive/jQuery/jquery.min.js'),
-                            public_path('packages/netinteractive/easyUi/jquery.easyui.min.js'),
+                            '/packages/netinteractive/jQuery/jquery.min.js',
+                            '/packages/netinteractive/easyUi/jquery.easyui.min.js',
                         ),
                     ),
         

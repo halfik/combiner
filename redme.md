@@ -10,6 +10,10 @@ Patrz do docs.md
 
 ## Changelog
 
+#### 2.0.16
+    Zmienilem sposob deklaracji sciezek do plikow dla combine - teraz public_path jest automatycznie dodawany przez combiner w trakcie budowania contentu
+   pliki wynikowe._
+
 #### 2.0.14 - 2.0.15
     Usunalem array_unique. Unique wartosci zapewnia generowaniu tablicy w oparciu o klucze, gdzie kluczem jest nazwa pliku.
     Dodatkowo jesli plik zostal dodany jako combine=>false, a jakis jakis inny modul dodal go jako combiner=true, nie
