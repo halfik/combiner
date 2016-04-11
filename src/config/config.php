@@ -19,13 +19,11 @@ return array(
     'default' => array(
         'js'=>array(
             'backend'=>array(
-                //Sciezka do foldera ze skinem lub array scezek (jezeli jest array to pliki ze skinów beda nadpisane tej kolejnosci w ktorej sa w array)
+                 #Sciezka do foldera ze skinem lub array scezek (jezeli jest array to pliki ze skinów beda nadpisane tej kolejnosci w ktorej sa w array)
                 'skins'=>public_path('app/backend/default/'),
 
-                //Typ plikow do zaladowania
-                'type'=>'js',
 
-                //Funkcja do generownia sciezki dla zapisywania wygenerowanego pliku
+                #Funkcja do generownia sciezki dla zapisywania wygenerowanego pliku
                 'savePath' => serialize(new SerializableClosure(
                         function(\Netinteractive\combiner\Combiner $combiner) use ($makeSavePath){
                             return $makeSavePath($combiner, 'backend');
@@ -41,16 +39,14 @@ return array(
                 ),
 
 
-                //pliki ktore theba zaladowac w pierwszej kolejnosci
-                'paths'=>array(
-
-                )
+                #pliki ktore theba zaladowac w pierwszej kolejnosci
+                'paths'=>array()
             ),
 
             'frontend'=>array(
                 'skins'=>public_path('app/frontend/default/'),
 
-                //Funkcja do generownia sciezki dla zapisywania wygenerowanego pliku
+                #Funkcja do generownia sciezki dla zapisywania wygenerowanego pliku
                 'savePath' => serialize(new SerializableClosure(
                         function(\Netinteractive\combiner\Combiner $combiner) use ($makeSavePath){
                             return $makeSavePath($combiner, 'backend');
@@ -65,12 +61,10 @@ return array(
                         })
                 ),
 
-                'type'=>'js',
-                'paths'=>array(
-                    public_path('packages/netinteractive/jQuery/jquery.min.js'),
-
-                )
+                'paths'=>array()
             )
         ),
     ),
+    'css'=>array(
+    )
 );

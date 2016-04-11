@@ -10,7 +10,7 @@ Patrz do docs.md
 
 ## Changelog
 
-#### 2.0.22
+#### 2.0.22 - 2.0.23
     Zamiana paczki "jeremeamia/superclosure" na "opis/closure"
 
 #### 2.0.20 - 2.0.21
