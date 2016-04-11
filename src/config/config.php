@@ -5,16 +5,17 @@ use Opis\Closure\SerializableClosure;
 $makeSavePath  = serialize(new SerializableClosure(
         function($combiner, $mode){
             $skin = $combiner->getSkin();
-
-            return public_path('combiner/'.$mode.'/'.\App::getLocale().'/'.$skin.'.js');
+            $type = $combiner->getType();
+            
+            return public_path('combiner/'.$mode.'/'.\App::getLocale().'/'.$skin.'.'.$type);
         }
     )
 );
 
 
 $handleContent  = serialize(new SerializableClosure(
-        function($js){
-            return \Combiner::replacePhp($js);
+        function($content){
+            return \Combiner::replacePhp($content);
         }
     )
 );

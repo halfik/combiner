@@ -78,6 +78,7 @@ class Combiner
      */
     public function combine()
     {
+
         if( \Config::get('app.debug') || !file_exists($this->getSavePath())){
             #budowanie tresci
             $content = $this->buildOutputContent($this->buildFileList());
@@ -85,7 +86,7 @@ class Combiner
             #zapis
             $this->saveOutputFile($content);
         }
-
+        
         return $this->makeUrl();
     }
 
@@ -101,6 +102,8 @@ class Combiner
             'combine' => array(),
             'html' => array()
         );
+
+
 
         foreach($this->getPaths() AS $path){
             $currentPath = null;
@@ -178,7 +181,6 @@ class Combiner
             }
 
         }
-
 
         $filesList = $this->clearFileList($filesList);
         
@@ -288,11 +290,10 @@ class Combiner
         $savePath = unserialize($config['savePath']);
 
         $this->setPaths($config['paths']);
-
+        
         $this->setHandler($handler);
         
         $this->setSavePath($savePath($this));
-
     }
 
     /**
