@@ -2,14 +2,26 @@
 
 use Opis\Closure\SerializableClosure;
 
-$makeSavePath=function($combiner, $mode){
-    $skins = $combiner->getSkins();
-    $skin = array_pop($skins);
-    $skin = explode(DIRECTORY_SEPARATOR,realpath($skin));
-    $skin = array_pop($skin);
+$makeSavePath  = serialize(new SerializableClosure(
+        function($combiner, $mode){
+            $skins = $combiner->getSkins();
+            $skin = array_pop($skins);
+            $skin = explode(DIRECTORY_SEPARATOR,realpath($skin));
+            $skin = array_pop($skin);
 
-    return public_path('combiner/'.$mode.'/'.\App::getLocale().'/'.$skin.'.js');
-};
+            return public_path('combiner/'.$mode.'/'.\App::getLocale().'/'.$skin.'.js');
+        }
+    )
+);
+
+
+$handleContent  = serialize(new SerializableClosure(
+        function($js){
+            return \Combiner::replacePhp($js);
+        }
+    )
+);
+
 
 $handleContent = function($js){
     return \Combiner::replacePhp($js);

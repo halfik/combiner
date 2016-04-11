@@ -280,10 +280,9 @@ class Combiner
     {
         $this->checkConfig($config);
 
-        $serializer = new \SuperClosure\Serializer;
 
-        $handler = $serializer->unserialize($config['handler']);
-        $savePath = $serializer->unserialize($config['savePath']);
+        $handler = unserialize($config['handler']);
+        $savePath = unserialize($config['savePath']);
 
         $this->setPaths($config['paths']);
         $this->setHandler($handler);
