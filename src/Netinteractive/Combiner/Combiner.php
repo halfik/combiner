@@ -1,7 +1,7 @@
 <?php namespace Netinteractive\Combiner;
 
 use Netinteractive\Utils\Utils;
-
+use Opis\Closure\SerializableClosure;
 
 class Combiner
 {
@@ -42,8 +42,11 @@ class Combiner
         $this->setType($type);
 
         $config =  \Config("packages.netinteractive.combiner.config.$skin.$type.$mode");
-        
-        $this->loadConfig($config);
+
+        if ($config){
+            $this->loadConfig($config);
+        }
+
 
         return $this;
     }
@@ -222,7 +225,7 @@ class Combiner
      */
     protected function saveOutputFile($content)
     {
-        //Tworzymy plik wyjsciowy jesli go nie ma
+        #Tworzymy plik wyjsciowy jesli go nie ma
         $info = pathinfo($this->getSavePath());
 
         if(array_key_exists('dirname', $info) && !is_dir($info['dirname'])){
@@ -280,13 +283,16 @@ class Combiner
     {
         $this->checkConfig($config);
 
-
+        
         $handler = unserialize($config['handler']);
         $savePath = unserialize($config['savePath']);
 
         $this->setPaths($config['paths']);
+
         $this->setHandler($handler);
+        
         $this->setSavePath($savePath($this));
+
     }
 
     /**
@@ -432,7 +438,7 @@ class Combiner
      */
     public function getSavePath()
     {
-        return $this->savePath;
+       return $this->savePath;
     }
 
     /**
