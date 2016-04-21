@@ -6,7 +6,7 @@ $makeSavePath  = serialize(new SerializableClosure(
         function($combiner, $mode){
             $skin = $combiner->getSkin();
             $type = $combiner->getType();
-            
+
             return public_path('combiner/'.$mode.'/'.\App::getLocale().'/'.$skin.'.'.$type);
         }
     )
@@ -24,10 +24,6 @@ return array(
     'default' => array(
         'js'=>array(
             'backend'=>array(
-                #Sciezka do foldera ze skinem lub array scezek (jezeli jest array to pliki ze skinów beda nadpisane tej kolejnosci w ktorej sa w array)
-                'skins'=>public_path('app/backend/default/'),
-
-
                 #Funkcja do generownia sciezki dla zapisywania wygenerowanego pliku
                 'savePath' => serialize(new SerializableClosure(
                         function(\Netinteractive\combiner\Combiner $combiner) use ($makeSavePath){
@@ -51,8 +47,6 @@ return array(
             ),
 
             'frontend'=>array(
-                'skins'=>public_path('app/frontend/default/'),
-
                 #Funkcja do generownia sciezki dla zapisywania wygenerowanego pliku
                 'savePath' => serialize(new SerializableClosure(
                         function(\Netinteractive\combiner\Combiner $combiner) use ($makeSavePath){
@@ -75,10 +69,6 @@ return array(
         ),
         'css'=>array(
             'backend'=>array(
-                #Sciezka do foldera ze skinem lub array scezek (jezeli jest array to pliki ze skinów beda nadpisane tej kolejnosci w ktorej sa w array)
-                'skins'=>public_path('app/backend/default/'),
-
-
                 #Funkcja do generownia sciezki dla zapisywania wygenerowanego pliku
                 'savePath' => serialize(new SerializableClosure(
                         function(\Netinteractive\combiner\Combiner $combiner) use ($makeSavePath){
@@ -102,8 +92,6 @@ return array(
             ),
 
             'frontend'=>array(
-                'skins'=>public_path('app/frontend/default/'),
-
                 #Funkcja do generownia sciezki dla zapisywania wygenerowanego pliku
                 'savePath' => serialize(new SerializableClosure(
                         function(\Netinteractive\combiner\Combiner $combiner) use ($makeSavePath){

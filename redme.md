@@ -10,6 +10,13 @@ Patrz do docs.md
 
 ## Changelog
 
+
+### 2.0.28
+    Fix: Combiner::buildOutputContent - rozpoznaje pliki zdalne
+
+#### 2.0.27
+    Usuniecie sciezek do skinow z konfiga
+
 #### 2.0.22 - 2.0.26
     Zamiana paczki "jeremeamia/superclosure" na "opis/closure"
 

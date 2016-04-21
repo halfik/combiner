@@ -164,12 +164,13 @@ class Combiner
             #aktualnie uzywana przez aplikacje
             if ($currentPath){
                 if ( is_dir($currentPath) ){
-                    $dirFiles = \Utils::scanDir($path, array('f', 'd'), true);
+                    $dirFiles = \Utils::scanDir($currentPath, array('f', 'd'), true);
 
                     foreach ($dirFiles AS $filePath){
                         $ext = pathinfo($filePath, PATHINFO_EXTENSION);
                         if ($ext == $this->getType()){
                             $key = $this->fileKey($filePath);
+
                             $filesList[$type][$key] = $filePath;
                         }
                     }
@@ -188,7 +189,7 @@ class Combiner
         if ($combine == true){
             return $filesList['combine'];
         }
-        
+
         return  $filesList['html'];
     }
 
@@ -247,7 +248,12 @@ class Combiner
     {
         $content='';
         foreach($filesList as $filePath){
-            $content.= file_get_contents(public_path($filePath));
+            if (substr($filePath, 0, 4) == 'http'){
+                $content.= file_get_contents($filePath);
+            }else{
+                $content.= file_get_contents(public_path($filePath));
+            }
+
         }
 
         //Jezlei jest handler
@@ -273,7 +279,7 @@ class Combiner
                 $publicPath .= '\\';
             }
         }
-
+        
         return asset(str_replace($publicPath,'',$this->getSavePath()));
     }
 
