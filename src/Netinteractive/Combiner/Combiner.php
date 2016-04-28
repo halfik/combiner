@@ -61,12 +61,13 @@ class Combiner
         $html = '';
         $fileList = $this->buildFileList(false, $tag);
 
-        foreach ($fileList AS $file){
+        foreach ($fileList AS $filePath){
             if ($this->getType() == 'css'){
-                $html .= '<link href="'.$file.'" rel="stylesheet">'."\n";
+                $html .= '<link href="'.$filePath.'" rel="stylesheet">'."\n";
             }else{
-                $html .= '<script src="'.$file.'"></script>'."\n";
+                $html .= '<script src="'.$filePath.'"></script>'."\n";
             }
+
         }
 
         return $html;
@@ -103,10 +104,9 @@ class Combiner
             'html' => array()
         );
 
-
-
         foreach($this->getPaths() AS $path){
             $currentPath = null;
+            $after = null;
             $type = 'combine';
 
             #sprawdzamy czy path mamy jako bezposrednia sciezke, czy tez tablice konfiguracyjna
@@ -116,6 +116,11 @@ class Combiner
                 #combine
                 if (array_key_exists('combine', $path) && $path['combine'] == false){
                     $type = 'html';
+                }
+
+                #lista plikow wymaganych do merga przed przetwarzanym plikiem
+                if (array_key_exists('after', $path)){
+                    $after =  $path['after'];
                 }
 
                 #pliki dla wersji mobile
@@ -153,13 +158,11 @@ class Combiner
                         }
                     }
                 }
-
-
             }
             else{
                 $currentPath = $path;
             }
-
+            
             #mozemy nie miec sciezki jesli jest do plik dla konkretnej wersji jezykowej, a nie jest to wersja
             #aktualnie uzywana przez aplikacje
             if ($currentPath){
@@ -171,20 +174,41 @@ class Combiner
                         if ($ext == $this->getType()){
                             $key = $this->fileKey($filePath);
 
-                            $filesList[$type][$key] = $filePath;
+                            if (!isSet($filesList[$type][$key])){
+                                $filesList[$type][$key] = array();
+                            }
+                            $filesList[$type][$key]['name'] = $filePath;
+
+                            #dodajemy informacje, ze plik ma sie zaldowac po innym pliku
+                            if ($after){
+                                $filesList[$type][$key]['after'] = $after;
+                                $after = null;
+                            }
                         }
                     }
                 }
                 else{
                     $key = $this->fileKey($currentPath);
-                    $filesList[$type][$key] = $currentPath;
+                    if (!isSet($filesList[$type][$key])){
+                        $filesList[$type][$key] = array();
+                    }
+
+                    $filesList[$type][$key]['name'] = $currentPath;
+                    #dodajemy informacje, ze plik ma sie zaldowac po innym pliku
+                    if ($after){
+                        $filesList[$type][$key]['after'] = $after;
+                    }
                 }
             }
 
         }
 
         $filesList = $this->clearFileList($filesList);
-        
+
+        #manipulujemy kolejnoscia plikow na liscie, tak aby pliki, ktore wymagaja innych, nie zostaly dodane do combinera lub layoutu za wczesnie
+        $filesList['combine'] = $this->reorderList($filesList['combine']);
+        $filesList['html'] = $this->reorderList($filesList['html']);
+
         #unique
         if ($combine == true){
             return $filesList['combine'];
@@ -193,16 +217,42 @@ class Combiner
         return  $filesList['html'];
     }
 
+    /**
+     * Reorders files in list
+     * @param array $fileList
+     * @return array
+     */
+    protected function reorderList(array $fileList)
+    {
+        $resultFileList = array();
+        foreach ($fileList AS $key=>$fileData){
+            if ( array_key_exists('after', $fileData)  && array_key_exists($fileData['after'], $fileList) ){
+                if (!isSet($fileList[$fileData['after']]['include_after'])){
+                    $fileList[$fileData['after']]['include'] = array();
+                }
+                $fileList[$fileData['after']]['include'][] = $fileData['name'];
+            }
+            else{
+                $resultFileList[] = $fileList[$key]['name'];
+                if (array_key_exists('include', $fileList[$key])){
+                    foreach ($fileList[$key]['include'] AS $afterFile){
+                        $resultFileList[] = $afterFile;
+                    }
+                }
+            }
+        }
+
+        return $resultFileList;
+    }
 
     /**
      * Metoda usuwa z listy plikow do comine, pliki ktore sa w wersji plain
      * @param array $fileList
      * @return array
      */
-    private function clearFileList(array $fileList)
+    protected function clearFileList(array $fileList)
     {
         if (array_key_exists('combine', $fileList) && array_key_exists('html', $fileList)){
-
             foreach ($fileList['combine'] AS $key=>$filePath){
                 if (isSet($fileList['html'][$key])){
                     unset($fileList['combine'][$key]);
@@ -247,13 +297,12 @@ class Combiner
     protected function buildOutputContent(array $filesList)
     {
         $content='';
-        foreach($filesList as $filePath){
-            if (substr($filePath, 0, 4) == 'http'){
-                $content.= file_get_contents($filePath);
+        foreach($filesList as $file){
+            if (substr($file, 0, 4) == 'http'){
+                $content.= file_get_contents($file);
             }else{
-                $content.= file_get_contents(public_path($filePath));
+                $content.= file_get_contents(public_path($file));
             }
-
         }
 
         //Jezlei jest handler

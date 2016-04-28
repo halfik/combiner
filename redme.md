@@ -10,6 +10,18 @@ Patrz do docs.md
 
 ## Changelog
 
+### 2.1.0
+    Dopisalem mechanizm, ktory pozwala wskazac plik, po ktorym chcemy aby nasz plik zostal zaladowany. Dzieki temu jesli np. nasz js wymaga jquery.js lub angular.js
+    bedziemy miec gwarancje, ze w pliku wyjsciowym combinera (lub include w layoutcie) - nasz plik zostanie dodany dopiero po wskazanym. Przykalad:
+    
+     'paths'=>array(
+        array(
+            'combine' => true,
+            'tag' => 'back',
+            'path' =>   'packages/netinteractive/acl',
+            'after' => 'agular.js'
+        ),
+    )
 
 ### 2.0.28
     Fix: Combiner::buildOutputContent - rozpoznaje pliki zdalne

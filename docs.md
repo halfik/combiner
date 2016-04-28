@@ -99,6 +99,19 @@ Pliki ladowane sa w kolejnosci podanej w pliku konfiguracyjnym.
 Jesli ladujemy pliki z calego katalogu, a checmy aby jeden z nich zaladowal sie przed innymi, to dodajemy go
 do konfiga, przed wpisem dla katalogu.
 
+Mozna wskazac konkretna nazwe pliku, po ktorej chcemy aby nasz plik zostal zaladowany:
+
+       'paths'=>array(
+            array(
+                'combine' => true,
+                'tag' => 'back',
+                'path' =>   'packages/netinteractive/acl',
+                'after' => 'agular.js'
+            ),
+        )
+        
+To, gdzie plik fizycznie sie znaduje, nie ma znaczenia. Liczy sie tylko jego nazwa.
+
 ## Tagowanie
 
 Plik konfiguracyjny:
